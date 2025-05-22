@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Atividade Interativa: O Solo - E.B.M Vidal Ramos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0;
+      color: #2c3e50;
+    }
+    header h2 {
+      margin: 0;
+      color: #34495e;
+      font-size: 1.2em;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+    .input-field {
+      margin-bottom: 20px;
+    }
+    .input-field label {
+      font-weight: bold;
+    }
+    .video-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .quiz-section ol {
+      padding-left: 20px;
+    }
+    .quiz-section li {
+      margin-bottom: 20px;
+    }
+    .quiz-section label {
+      cursor: pointer;
+    }
+    .btn {
+      display: block;
+      padding: 10px 20px;
+      background-color: #2980b9;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 20px auto;
+    }
+    .btn:hover {
+      background-color: #1f6391;
+    }
+    #resultado {
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #27ae60;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Cabeçalho: Nome do estudante e nome da escola -->
+    <header>
+      <h1>Atividade Interativa: O Solo</h1>
+      <h2>E.B.M Vidal Ramos</h2>
+    </header>
+    
+    <div class="input-field">
+      <label for="studentName">Nome do Estudante:</label><br>
+      <input type="text" id="studentName" placeholder="Digite seu nome" style="width:100%; padding:8px;">
+    </div>
+
+    <!-- Texto introdutório sobre o tema -->
+    <section class="introducao">
+      <h3>Introdução</h3>
+      <p>
+        O solo é a camada superficial da Terra onde ocorrem os processos vitais para a manutenção da vida. Ele é formado pela decomposição de rochas e matéria orgânica, compondo um ambiente rico que, além de oferecer suporte físico às plantas, abriga inúmeros organismos que colaboram na ciclagem dos nutrientes. A qualidade do solo influencia diretamente a produção de alimentos, a manutenção da biodiversidade e o equilíbrio ambiental.
+      </p>
+    </section>
+    
+    <!-- Vídeo didático sobre o tema -->
+    <section class="video-container">
+  <h3>Vídeo Didático</h3>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/-mRGUVE7dt0" 
+    title="Novo vídeo sobre o solo" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+  </iframe>
+</section>
+    
+    <!-- Seção do Quiz -->
+    <section class="quiz-section">
+      <h3>Questionário: Teste seus conhecimentos sobre o Solo</h3>
+      <form id="quizForm">
+        <ol>
+          <!-- Questão 1 -->
+          <li>
+            <p><strong>1. O que é solo?</strong></p>
+            <label><input type="radio" name="q1" value="A"> A) Uma placa tectônica.</label><br>
+            <label><input type="radio" name="q1" value="B"> B) A camada superior da Terra onde se desenvolve a vida.</label><br>
+            <label><input type="radio" name="q1" value="C"> C) Uma formação rochosa profunda.</label><br>
+            <label><input type="radio" name="q1" value="D"> D) A parte líquida do planeta.</label><br>
+            <label><input type="radio" name="q1" value="E"> E) Um elemento inorgânico do meio ambiente.</label>
+          </li>
+          
+          <!-- Questão 2 -->
+          <li>
+            <p><strong>2. Quais são os componentes principais do solo?</strong></p>
+            <label><input type="radio" name="q2" value="A"> A) Água, ar, matéria orgânica e partículas minerais.</label><br>
+            <label><input type="radio" name="q2" value="B"> B) Apenas rochas.</label><br>
+            <label><input type="radio" name="q2" value="C"> C) Apenas ar.</label><br>
+            <label><input type="radio" name="q2" value="D"> D) Água e minerais.</label><br>
+            <label><input type="radio" name="q2" value="E"> E) Matéria orgânica e ar.</label>
+          </li>
+          
+          <!-- Questão 3 -->
+          <li>
+            <p><strong>3. Como se forma o solo?</strong></p>
+            <label><input type="radio" name="q3" value="A"> A) Por deposição de sedimentos.</label><br>
+            <label><input type="radio" name="q3" value="B"> B) Pela decomposição de resíduos de animais.</label><br>
+            <label><input type="radio" name="q3" value="C"> C) Pela erosão e desintegração das rochas.</label><br>
+            <label><input type="radio" name="q3" value="D"> D) Pela decomposição exclusiva da vegetação.</label><br>
+            <label><input type="radio" name="q3" value="E"> E) Pela atividade vulcânica apenas.</label>
+          </li>
+          
+          <!-- Questão 4 -->
+          <li>
+            <p><strong>4. Qual a função principal do solo para as plantas?</strong></p>
+            <label><input type="radio" name="q4" value="A"> A) Servir apenas de abrigo para as raízes.</label><br>
+            <label><input type="radio" name="q4" value="B"> B) Proporcionar um ambiente seco para o crescimento.</label><br>
+            <label><input type="radio" name="q4" value="C"> C) Fornecer nutrientes e água para seu desenvolvimento.</label><br>
+            <label><input type="radio" name="q4" value="D"> D) Sustentar apenas o peso das folhas.</label><br>
+            <label><input type="radio" name="q4" value="E"> E) Proteger os animais que nele vivem.</label>
+          </li>
+          
+          <!-- Questão 5 -->
+          <li>
+            <p><strong>5. Qual é a importância da matéria orgânica presente no solo?</strong></p>
+            <label><input type="radio" name="q5" value="A"> A) Aumentar a acidez do solo.</label><br>
+            <label><input type="radio" name="q5" value="B"> B) Diminuir a fertilidade.</label><br>
+            <label><input type="radio" name="q5" value="C"> C) Melhorar a capacidade de retenção de água e nutrientes.</label><br>
+            <label><input type="radio" name="q5" value="D"> D) Reduzir a biodiversidade.</label><br>
+            <label><input type="radio" name="q5" value="E"> E) Tornar o solo mais duro.</label>
+          </li>
+          
+          <!-- Questão 6 -->
+          <li>
+            <p><strong>6. Qual desses solos é caracterizado por ter partículas maiores e permitir que a água escoe rapidamente?</strong></p>
+            <label><input type="radio" name="q6" value="A"> A) Solo argiloso.</label><br>
+            <label><input type="radio" name="q6" value="B"> B) Solo arenoso.</label><br>
+            <label><input type="radio" name="q6" value="C"> C) Solo humoso.</label><br>
+            <label><input type="radio" name="q6" value="D"> D) Solo fértil.</label><br>
+            <label><input type="radio" name="q6" value="E"> E) Solo compactado.</label>
+          </li>
+          
+          <!-- Questão 7 -->
+          <li>
+            <p><strong>7. Qual tipo de solo retém mais água?</strong></p>
+            <label><input type="radio" name="q7" value="A"> A) Solo arenoso.</label><br>
+            <label><input type="radio" name="q7" value="B"> B) Solo argiloso.</label><br>
+            <label><input type="radio" name="q7" value="C"> C) Solo pedregoso.</label><br>
+            <label><input type="radio" name="q7" value="D"> D) Solo biodiverso.</label><br>
+            <label><input type="radio" name="q7" value="E"> E) Solo grudento.</label>
+          </li>
+          
+          <!-- Questão 8 -->
+          <li>
+            <p><strong>8. Qual dos seguintes fatores pode causar a degradação do solo?</strong></p>
+            <label><input type="radio" name="q8" value="A"> A) Plantio de árvores.</label><br>
+            <label><input type="radio" name="q8" value="B"> B) Práticas agrícolas sustentáveis.</label><br>
+            <label><input type="radio" name="q8" value="C"> C) Uso inadequado de agrotóxicos.</label><br>
+            <label><input type="radio" name="q8" value="D"> D) Adubação orgânica.</label><br>
+            <label><input type="radio" name="q8" value="E"> E) Irrigação controlada.</label>
+          </li>
+          
+          <!-- Questão 9 -->
+          <li>
+            <p><strong>9. O que é a erosão do solo?</strong></p>
+            <label><input type="radio" name="q9" value="A"> A) Formação de novas partículas orgânicas.</label><br>
+            <label><input type="radio" name="q9" value="B"> B) Processo de renovação das plantas.</label><br>
+            <label><input type="radio" name="q9" value="C"> C) Desgaste do solo causado pela água, vento ou atividades humanas.</label><br>
+            <label><input type="radio" name="q9" value="D"> D) Transformação do solo em rocha.</label><br>
+            <label><input type="radio" name="q9" value="E"> E) Crescimento de microorganismos.</label>
+          </li>
+          
+          <!-- Questão 10 -->
+          <li>
+            <p><strong>10. Qual prática agrícola ajuda na conservação do solo?</strong></p>
+            <label><input type="radio" name="q10" value="A"> A) Desmatamento.</label><br>
+            <label><input type="radio" name="q10" value="B"> B) Monocultura sem rodízio.</label><br>
+            <label><input type="radio" name="q10" value="C"> C) Rota&ccedil;&atilde;o de culturas.</label><br>
+            <label><input type="radio" name="q10" value="D"> D) Uso excessivo de agrot&oacute;xicos.</label><br>
+            <label><input type="radio" name="q10" value="E"> E) Implantação de áreas impermeáveis.</label>
+          </li>
+          
+          <!-- Questão 11 -->
+          <li>
+            <p><strong>11. Qual o papel das minhocas no solo?</strong></p>
+            <label><input type="radio" name="q11" value="A"> A) Poluir o solo.</label><br>
+            <label><input type="radio" name="q11" value="B"> B) Aumentar a compactação.</label><br>
+            <label><input type="radio" name="q11" value="C"> C) Ajudar na aeração e decomposição da matéria orgânica.</label><br>
+            <label><input type="radio" name="q11" value="D"> D) Substituir a matéria orgânica.</label><br>
+            <label><input type="radio" name="q11" value="E"> E) Reduzir a biodiversidade.</label>
+          </li>
+          
+          <!-- Questão 12 -->
+          <li>
+            <p><strong>12. Como podemos melhorar a qualidade do solo?</strong></p>
+            <label><input type="radio" name="q12" value="A"> A) Removendo a vegeta&ccedil;&atilde;o.</label><br>
+            <label><input type="radio" name="q12" value="B"> B) Realizando a fertiliza&ccedil;&atilde;o e aduba&ccedil;&atilde;o.</label><br>
+            <label><input type="radio" name="q12" value="C"> C) Incendiando &aacute;reas agr&iacute;colas.</label><br>
+            <label><input type="radio" name="q12" value="D"> D) Usando pesticidas em excesso.</label><br>
+            <label><input type="radio" name="q12" value="E"> E) Evitando a irriga&ccedil;&atilde;o.</label>
+          </li>
+          
+          <!-- Questão 13 -->
+          <li>
+            <p><strong>13. Qual é a consequência do desmatamento para o solo?</strong></p>
+            <label><input type="radio" name="q13" value="A"> A) Aumento da fertilidade.</label><br>
+            <label><input type="radio" name="q13" value="B"> B) Redução da erosão.</label><br>
+            <label><input type="radio" name="q13" value="C"> C) Perda de matéria orgânica e aumento da erosão.</label><br>
+            <label><input type="radio" name="q13" value="D"> D) Melhoria na qualidade da água.</label><br>
+            <label><input type="radio" name="q13" value="E"> E) Crescimento de novas plantas.</label>
+          </li>
+          
+          <!-- Questão 14 -->
+          <li>
+            <p><strong>14. O que é a aduba&ccedil;&atilde;o?</strong></p>
+            <label><input type="radio" name="q14" value="A"> A) Processo de irriga&ccedil;&atilde;o do solo.</label><br>
+            <label><input type="radio" name="q14" value="B"> B) T&eacute;cnica para compactar o solo.</label><br>
+            <label><input type="radio" name="q14" value="C"> C) Aplicação de nutrientes para melhorar a fertilidade.</label><br>
+            <label><input type="radio" name="q14" value="D"> D) Remoção da camada superficial do solo.</label><br>
+            <label><input type="radio" name="q14" value="E"> E) Secagem do solo.</label>
+          </li>
+          
+          <!-- Questão 15 -->
+          <li>
+            <p><strong>15. Por que o solo é considerado um recurso n&atilde;o renov&aacute;vel?</strong></p>
+            <label><input type="radio" name="q15" value="A"> A) Porque se forma instantaneamente.</label><br>
+            <label><input type="radio" name="q15" value="B"> B) Porque sua forma&ccedil;&atilde;o leva muitos anos.</label><br>
+            <label><input type="radio" name="q15" value="C"> C) Porque pode ser facilmente reproduzido.</label><br>
+            <label><input type="radio" name="q15" value="D"> D) Porque n&atilde;o &eacute; importante para a agricultura.</label><br>
+            <label><input type="radio" name="q15" value="E"> E) Porque sua composi&ccedil;&atilde;o jamais se altera.</label>
+          </li>
+          
+          <!-- Questão 16 -->
+          <li>
+            <p><strong>16. Qual a rela&ccedil;&atilde;o entre o solo e a preserva&ccedil;&atilde;o da &aacute;gua?</strong></p>
+            <label><input type="radio" name="q16" value="A"> A) O solo transforma a &aacute;gua em rocha.</label><br>
+            <label><input type="radio" name="q16" value="B"> B) Um solo bem estruturado mantém a umidade necess&aacute;ria para as plantas.</label><br>
+            <label><input type="radio" name="q16" value="C"> C) O solo n&atilde;o tem rela&ccedil;&atilde;o com a &aacute;gua.</label><br>
+            <label><input type="radio" name="q16" value="D"> D) O solo impede que a &aacute;gua atinja as ra&iacute;zes.</label><br>
+            <label><input type="radio" name="q16" value="E"> E) O solo acelera a evapora&ccedil;&atilde;o da &aacute;gua.</label>
+          </li>
+          
+          <!-- Questão 17 -->
+          <li>
+            <p><strong>17. O que &eacute; a compacta&ccedil;&atilde;o do solo e quais s&atilde;o seus efeitos?</strong></p>
+            <label><input type="radio" name="q17" value="A"> A) Compacta&ccedil;&atilde;o aumenta a aera&ccedil;&atilde;o do solo.</label><br>
+            <label><input type="radio" name="q17" value="B"> B) Compacta&ccedil;&atilde;o provoca adensamento, dificultando a penetra&ccedil;&atilde;o de &aacute;gua e ra&iacute;zes.</label><br>
+            <label><input type="radio" name="q17" value="C"> C) Compacta&ccedil;&atilde;o melhora a absor&ccedil;&atilde;o dos nutrientes.</label><br>
+            <label><input type="radio" name="q17" value="D"> D) Compacta&ccedil;&atilde;o aumenta a permeabilidade do solo.</label><br>
+            <label><input type="radio" name="q17" value="E"> E) Compacta&ccedil;&atilde;o estimula o crescimento de minhocas.</label>
+          </li>
+          
+          <!-- Questão 18 -->
+          <li>
+            <p><strong>18. Como o solo pode favorecer ou limitar a agricultura?</strong></p>
+            <label><input type="radio" name="q18" value="A"> A) Um solo fértil proporciona o crescimento saudável das plantas.</label><br>
+            <label><input type="radio" name="q18" value="B"> B) O solo n&atilde;o influencia a agricultura.</label><br>
+            <label><input type="radio" name="q18" value="C"> C) Todos os solos favorecem igualmente a produ&ccedil;&atilde;o.</label><br>
+            <label><input type="radio" name="q18" value="D"> D) Sozinhos os solos dificultam o cultivo sem aduba&ccedil;&atilde;o.</label><br>
+            <label><input type="radio" name="q18" value="E"> E) O solo prioriza a alimenta&ccedil;&atilde;o animal.</label>
+          </li>
+          
+          <!-- Questão 19 -->
+          <li>
+            <p><strong>19. Qual a rela&ccedil;&atilde;o entre solo e biodiversidade?</strong></p>
+            <label><input type="radio" name="q19" value="A"> A) Um solo rico promove maior biodiversidade.</label><br>
+            <label><input type="radio" name="q19" value="B"> B) O solo n&atilde;o influencia a biodiversidade.</label><br>
+            <label><input type="radio" name="q19" value="C"> C) Alta biodiversidade torna o solo pobre.</label><br>
+            <label><input type="radio" name="q19" value="D"> D) Sozinhos os solos &uacute;nicos n&atilde;o suportam vida.</label><br>
+            <label><input type="radio" name="q19" value="E"> E) Biodiversidade existe apenas em &aacute;reas aqu&aacute;ticas.</label>
+          </li>
+          
+          <!-- Questão 20 -->
+          <li>
+            <p><strong>20. Por que &eacute; importante cuidar do solo?</strong></p>
+            <label><input type="radio" name="q20" value="A"> A) Para garantir a qualidade dos alimentos produzidos.</label><br>
+            <label><input type="radio" name="q20" value="B"> B) Porque o solo &eacute; um recurso sem valor.</label><br>
+            <label><input type="radio" name="q20" value="C"> C) Pois &eacute; tarefa exclusiva dos agricultores.</label><br>
+            <label><input type="radio" name="q20" value="D"> D) Porque o solo n&atilde;o sofre influ&ecirc;ncia humana.</label><br>
+            <label><input type="radio" name="q20" value="E"> E) Para aumentar o valor dos im&oacute;veis.</label>
+          </li>
+        </ol>
+      </form>
+      <button class="btn" onclick="calcularPontuacao()">Enviar Respostas</button>
+    </section>
+    
+    <!-- Resultado -->
+    <div id="resultado"></div>
+    
+    <!-- Script para correção e exibição da pontuação -->
+    <script>
+      function calcularPontuacao() {
+        var score = 0;
+        var totalQuestions = 20;
+        // Chave de respostas corretas:
+        var answers = {
+          q1: "B",
+          q2: "A",
+          q3: "C",
+          q4: "C",
+          q5: "C",
+          q6: "B",
+          q7: "B",
+          q8: "C",
+          q9: "C",
+          q10: "C",
+          q11: "C",
+          q12: "B",
+          q13: "C",
+          q14: "C",
+          q15: "B",
+          q16: "B",
+          q17: "B",
+          q18: "A",
+          q19: "A",
+          q20: "A"
+        };
+    
+        // Percorre todas as questões e checa as respostas
+        for (var i = 1; i <= totalQuestions; i++) {
+          var qName = "q" + i;
+          var radios = document.getElementsByName(qName);
+          for (var j = 0; j < radios.length; j++) {
+            if (radios[j].checked) {
+              if (radios[j].value === answers[qName]) {
+                score++;
+              }
+              break;
+            }
+          }
+        }
+    
+        // Exibe a pontuação final com saudação personalizada
+        var studentName = document.getElementById("studentName").value || "Aluno";
+        document.getElementById("resultado").innerHTML = 
+          "Olá " + studentName + ", sua pontuação foi: " + score + " de " + totalQuestions;
+      }
+    </script>
+    
+  </div>
+</body>
+</html>
