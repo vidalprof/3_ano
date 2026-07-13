@@ -192,6 +192,16 @@
     .color-row { display: flex; align-items: center; }
     .color-row input[type=color] { width: 52px; height: 44px; padding: 3px; margin-right: 10px; flex: 0 0 auto; }
 
+    /* Paleta de cores (clique e pronto) */
+    .swatches { display: flex; flex-wrap: wrap; }
+    .swatch {
+      width: 36px; height: 36px; border-radius: 50%; border: 3px solid #fff;
+      box-shadow: 0 0 0 1px var(--border); cursor: pointer; padding: 0; margin: 0 10px 10px 0;
+      transition: transform .12s;
+    }
+    .swatch:hover { transform: scale(1.08); }
+    .swatch.sel { box-shadow: 0 0 0 3px var(--brand); }
+
     .toast {
       position: fixed; left: 50%; bottom: 24px; margin-left: -140px; width: 280px;
       background: var(--ink); color: #fff; padding: 13px 18px; border-radius: 12px;
@@ -515,6 +525,22 @@
     }
 
     /* Turmas */
+    var PALETA_CORES = ["#6d5efc", "#2f80ed", "#17b6a0", "#27ae60", "#f1c40f", "#e67e22", "#ef5b6f", "#e84393", "#8e44ad", "#7f8c8d"];
+    function swatchesHtml(atual) {
+      atual = (atual || "#6d5efc").toLowerCase();
+      var s = '<div class="swatches" id="mSwatches">';
+      for (var i = 0; i < PALETA_CORES.length; i++) {
+        var cor = PALETA_CORES[i];
+        s += '<button type="button" class="swatch' + (cor === atual ? " sel" : "") + '" data-cor="' + cor + '" style="background:' + cor + '" title="' + cor + '" onclick="pickCor(\'' + cor + '\')"></button>';
+      }
+      return s + '</div><input type="hidden" id="mCor" value="' + esc(atual) + '">';
+    }
+    function pickCor(cor) {
+      var el = document.getElementById("mCor"); if (el) el.value = cor;
+      var sw = document.getElementById("mSwatches"); if (!sw) return;
+      var kids = sw.children;
+      for (var i = 0; i < kids.length; i++) kids[i].className = (kids[i].getAttribute("data-cor") === cor ? "swatch sel" : "swatch");
+    }
     function addTurma() { editTurmaForm(null); }
     function editTurma(ti) { editTurmaForm(ti); }
     function editTurmaForm(ti) {
@@ -522,7 +548,7 @@
       openModal(
         "<h3>" + (ti == null ? "Nova turma" : "Editar turma") + "</h3>" +
         '<div class="field"><label>Nome da turma</label><input id="mNome" value="' + esc(t.nome) + '" placeholder="Ex: 6º Ano A"></div>' +
-        '<div class="field"><label>Cor</label><div class="color-row"><input type="color" id="mCor" value="' + esc(t.cor || "#6d5efc") + '"><span class="hint">Faixa colorida no topo do cartão</span></div></div>' +
+        '<div class="field"><label>Cor da turma</label>' + swatchesHtml(t.cor || "#6d5efc") + '<div class="hint">Clique numa cor para escolher.</div></div>' +
         '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveTurma(' + (ti == null ? "null" : ti) + ')">Salvar</button></div>'
       );
       setTimeout(function () { var e = document.getElementById("mNome"); if (e) e.focus(); }, 50);
