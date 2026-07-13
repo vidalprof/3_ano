@@ -224,7 +224,8 @@
       <span class="spacer"></span>
       <button class="btn small ghost" onclick="openHeaderEdit()">Editar título</button>
       <button class="btn small" onclick="addTurma()">+ Nova turma</button>
-      <button class="btn small ok" onclick="publicar()">⬇️ Publicar</button>
+      <button class="btn small ok" id="btnPublicar" onclick="publicar()">⬇️ Publicar</button>
+      <span class="tag" id="cloudBadge" style="display:none;background:rgba(23,182,160,0.15);color:var(--ok);margin-left:8px;">☁️ Salva automático</span>
       <button class="btn small ghost" onclick="logout()">Sair</button>
     </div>
 
@@ -236,15 +237,39 @@
   <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
   <div class="toast" id="toast"></div>
 
+  <!-- SDK do Firebase (opcional). Se não carregar, o site usa o modo local automaticamente. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
   <script>
     /* =========================================================
        CONFIGURAÇÃO
+       =========================================================
+
+       (A) NUVEM EM TEMPO REAL (Firebase) — RECOMENDADO
        ---------------------------------------------------------
-       Troque a senha abaixo pela sua. Por ser um site estático,
-       esta senha protege o painel de edição neste navegador —
-       ninguém publica no site sem acesso ao seu GitHub, então
-       é seguro para os alunos.
-       ========================================================= */
+       Preencha FIREBASE_CONFIG com os dados do seu projeto Firebase
+       e PROF_EMAIL com o e-mail do professor cadastrado no
+       Authentication. Com isso, tudo que você editar aparece NA HORA
+       para os alunos, em qualquer aparelho. Passo a passo no
+       arquivo GUIA-FIREBASE.md.
+
+       Enquanto FIREBASE_CONFIG estiver null, o site funciona em
+       MODO LOCAL (salva no seu navegador; para os alunos verem use
+       o botão Publicar). */
+    var FIREBASE_CONFIG = null;
+    /* Exemplo (cole o seu no lugar do null acima):
+    var FIREBASE_CONFIG = {
+      apiKey: "AIza...",
+      authDomain: "seu-projeto.firebaseapp.com",
+      databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com",
+      projectId: "seu-projeto"
+    };
+    */
+    var PROF_EMAIL = "";   // ex.: "professor@vidalramos.com" (usuário criado no Firebase Authentication)
+
+    /* (B) MODO LOCAL — senha usada só quando a nuvem NÃO está configurada. */
     var SENHA_ADMIN = "vidal2026";
 
     var TIPOS = [
@@ -258,12 +283,67 @@
     var state = { titulo: "Portal", subtitulo: "", turmas: [] };
     var admin = false;
     var sel = 0;
+    var cloud = false, dbRef = null, cloudHasData = false;
 
     function uid() { return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
     function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
     function icoDoTipo(t) { for (var i = 0; i < TIPOS.length; i++) if (TIPOS[i].valor === t) return TIPOS[i].ico; return "🔗"; }
     function ehTipo(t) { for (var i = 0; i < TIPOS.length; i++) if (TIPOS[i].valor === t) return true; return false; }
     function saveDraft() { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); } catch (e) {} }
+
+    /* Estado limpo (sem campos internos) para salvar/exportar */
+    function cleanState() {
+      var limpo = { titulo: state.titulo, subtitulo: state.subtitulo, turmas: [] };
+      for (var i = 0; i < (state.turmas || []).length; i++) {
+        var t = state.turmas[i], nl = [];
+        for (var j = 0; j < (t.links || []).length; j++) {
+          var l = t.links[j];
+          nl.push({ id: l.id, titulo: l.titulo, url: l.url, tipo: l.tipo });
+        }
+        limpo.turmas.push({ id: t.id, nome: t.nome, cor: t.cor, links: nl });
+      }
+      return limpo;
+    }
+
+    /* Salva a alteração: na nuvem (todos veem na hora) ou local */
+    function persist() {
+      if (cloud && dbRef) {
+        dbRef.set(cleanState()).then(function () {}, function () { toast("Erro ao salvar na nuvem", "err"); });
+      } else {
+        saveDraft();
+      }
+    }
+
+    /* Inicializa a nuvem (Firebase). Retorna true se ativada. */
+    function initCloud() {
+      if (!FIREBASE_CONFIG || typeof firebase === "undefined") return false;
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        dbRef = firebase.database().ref("portal");
+        cloud = true;
+        dbRef.on("value", function (snap) {
+          var data = snap.val();
+          if (data && data.turmas) { cloudHasData = true; state = data; render(); }
+          else { cloudHasData = false; }
+        });
+        firebase.auth().onAuthStateChanged(function (user) {
+          admin = !!user; render();
+          if (user && !cloudHasData && state.turmas && state.turmas.length) persist();
+        });
+        return true;
+      } catch (e) { cloud = false; return false; }
+    }
+
+    function fetchDataJson(cb) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "data.json?v=" + Date.now(), true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status >= 200 && xhr.status < 300) { try { cb(JSON.parse(xhr.responseText)); } catch (e) { cb(null); } }
+        else cb(null);
+      };
+      xhr.send();
+    }
 
     function toast(msg, kind) {
       var t = document.getElementById("toast");
@@ -272,22 +352,24 @@
     }
 
     function carregar() {
+      /* Modo NUVEM: os dados vêm do Firebase em tempo real. */
+      if (initCloud()) {
+        fetchDataJson(function (data) {
+          if (data && !cloudHasData && (!state.turmas || !state.turmas.length)) { state = data; render(); }
+        });
+        return;
+      }
+      /* Modo LOCAL: rascunho no navegador + data.json publicado. */
       var draft = null;
       try { draft = localStorage.getItem(DRAFT_KEY); } catch (e) {}
       if (draft) { try { state = JSON.parse(draft); render(); } catch (e) { try { localStorage.removeItem(DRAFT_KEY); } catch (e2) {} draft = null; } }
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "data.json?v=" + Date.now(), true);
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState !== 4) return;
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try { var data = JSON.parse(xhr.responseText); if (!draft) { state = data; render(); } }
-          catch (e) {}
-        } else if (!draft) {
+      fetchDataJson(function (data) {
+        if (data) { if (!draft) { state = data; render(); } }
+        else if (!draft) {
           document.getElementById("siteTitulo").textContent = "Não foi possível carregar os links";
           document.getElementById("siteSubtitulo").textContent = "Abra o site pelo endereço publicado.";
         }
-      };
-      xhr.send();
+      });
     }
 
     function render() {
@@ -295,6 +377,8 @@
       document.getElementById("siteSubtitulo").textContent = state.subtitulo || "";
       document.getElementById("adminBar").className = "admin-bar" + (admin ? " on" : "");
       document.getElementById("lockBtn").textContent = admin ? "🔓" : "🔒";
+      var bp = document.getElementById("btnPublicar"); if (bp) bp.style.display = cloud ? "none" : "";
+      var cb = document.getElementById("cloudBadge"); if (cb) cb.style.display = cloud ? "" : "none";
 
       var cont = document.getElementById("turmas");
       cont.innerHTML = "";
@@ -377,7 +461,7 @@
       if (j < 0 || j >= state.turmas.length) return;
       var t = state.turmas.splice(ti, 1)[0];
       state.turmas.splice(j, 0, t);
-      saveDraft(); render();
+      persist(); render();
     }
 
     /* Login */
@@ -392,10 +476,20 @@
     }
     function doLogin() {
       var v = document.getElementById("mSenha").value;
-      if (v === SENHA_ADMIN) { admin = true; closeModal(); render(); toast("Modo professor ativado"); }
-      else { toast("Senha incorreta", "err"); }
+      if (cloud) {
+        firebase.auth().signInWithEmailAndPassword(PROF_EMAIL, v).then(
+          function () { closeModal(); toast("Modo professor ativado"); },
+          function () { toast("Senha incorreta", "err"); }
+        );
+      } else {
+        if (v === SENHA_ADMIN) { admin = true; closeModal(); render(); toast("Modo professor ativado"); }
+        else { toast("Senha incorreta", "err"); }
+      }
     }
-    function logout() { admin = false; render(); toast("Você saiu do modo professor"); }
+    function logout() {
+      if (cloud && firebase.auth().currentUser) { firebase.auth().signOut(); toast("Você saiu do modo professor"); }
+      else { admin = false; render(); toast("Você saiu do modo professor"); }
+    }
 
     /* Cabeçalho */
     function openHeaderEdit() {
@@ -409,7 +503,7 @@
     function saveHeader() {
       state.titulo = document.getElementById("mTit").value.replace(/^\s+|\s+$/g, "") || state.titulo;
       state.subtitulo = document.getElementById("mSub").value.replace(/^\s+|\s+$/g, "");
-      saveDraft(); closeModal(); render();
+      persist(); closeModal(); render();
     }
 
     /* Turmas */
@@ -431,11 +525,11 @@
       if (!nome) { toast("Digite o nome da turma", "err"); return; }
       if (ti == null) state.turmas.push({ id: uid(), nome: nome, cor: cor, links: [] });
       else { state.turmas[ti].nome = nome; state.turmas[ti].cor = cor; }
-      saveDraft(); closeModal(); render();
+      persist(); closeModal(); render();
     }
     function delTurma(ti) {
       if (!confirm('Remover a turma "' + state.turmas[ti].nome + '" e todos os seus links?')) return;
-      state.turmas.splice(ti, 1); saveDraft(); render();
+      state.turmas.splice(ti, 1); persist(); render();
     }
 
     /* Links */
@@ -472,11 +566,11 @@
       if (!titulo || !url) { toast("Preencha título e URL", "err"); return; }
       if (li == null) state.turmas[ti].links.push({ id: uid(), titulo: titulo, url: url, tipo: tipo });
       else { var l = state.turmas[ti].links[li]; l.titulo = titulo; l.url = url; l.tipo = tipo; }
-      saveDraft(); closeModal(); render();
+      persist(); closeModal(); render();
     }
     function delLink(ti, li) {
       if (!confirm('Remover o link "' + state.turmas[ti].links[li].titulo + '"?')) return;
-      state.turmas[ti].links.splice(li, 1); saveDraft(); render();
+      state.turmas[ti].links.splice(li, 1); persist(); render();
     }
 
     /* Vários links de uma vez */
@@ -505,7 +599,7 @@
         } else { url = normalizaUrl(linha); titulo = url; }
         if (url) { state.turmas[ti].links.push({ id: uid(), titulo: titulo || url, url: url, tipo: tipo }); n++; }
       }
-      saveDraft(); closeModal(); render();
+      persist(); closeModal(); render();
       toast(n + " link(s) adicionado(s)");
     }
 
