@@ -258,7 +258,15 @@
        Enquanto FIREBASE_CONFIG estiver null, o site funciona em
        MODO LOCAL (salva no seu navegador; para os alunos verem use
        o botão Publicar). */
-    var FIREBASE_CONFIG = null;
+    var FIREBASE_CONFIG = {
+      apiKey: "AIzaSyA9yzsYXgE7nUSQYEXW0vXlmGzETQqq-F0",
+      authDomain: "central-de-aulas-20e45.firebaseapp.com",
+      databaseURL: "https://central-de-aulas-20e45-default-rtdb.firebaseio.com",
+      projectId: "central-de-aulas-20e45",
+      storageBucket: "central-de-aulas-20e45.firebasestorage.app",
+      messagingSenderId: "1098538878591",
+      appId: "1:1098538878591:web:406bf9588267bb000be14a"
+    };
     /* Exemplo (cole o seu no lugar do null acima):
     var FIREBASE_CONFIG = {
       apiKey: "AIza...",
@@ -267,7 +275,7 @@
       projectId: "seu-projeto"
     };
     */
-    var PROF_EMAIL = "";   // ex.: "professor@vidalramos.com" (usuário criado no Firebase Authentication)
+    var PROF_EMAIL = "professor@central.com";   // usuário criado no Firebase Authentication
 
     /* (B) MODO LOCAL — senha usada só quando a nuvem NÃO está configurada. */
     var SENHA_ADMIN = "vidal2026";
