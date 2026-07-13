@@ -1,11 +1,11 @@
 {
-  "titulo": "Prof. Vidal Ramos",
+  "titulo": "Central de Aulas",
   "subtitulo": "E.B.M Vidal Ramos",
   "turmas": [
     {
       "id": "turma-exemplo",
       "nome": "Turma de Exemplo",
-      "cor": "#2980b9",
+      "cor": "#6d5efc",
       "links": [
         {
           "id": "link-o-solo",
