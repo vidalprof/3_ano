@@ -7,59 +7,72 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
   <style>
     :root {
-      --bg: #f4f6fc;
+      --bg: #f1f2fb;
       --card: #ffffff;
-      --ink: #2b2d42;
-      --muted: #7a7f9a;
+      --ink: #232544;
+      --muted: #797f9e;
       --brand: #6d5efc;
-      --brand-2: #9b8cff;
-      --accent: #17b6a0;
-      --border: #e8eaf4;
+      --brand-2: #8b7bff;
+      --brand-ink: #4a3fd6;
+      --accent: #12b3a0;
+      --grad: linear-gradient(135deg, #6d5efc 0%, #8b7bff 50%, #12b3a0 135%);
+      --border: #e7e9f6;
       --danger: #ef5b6f;
-      --ok: #17b6a0;
-      --radius: 18px;
-      --shadow: 0 10px 30px rgba(64, 66, 120, 0.10);
-      --shadow-sm: 0 4px 14px rgba(64, 66, 120, 0.08);
+      --ok: #12b3a0;
+      --radius: 20px;
+      --shadow: 0 18px 45px -18px rgba(58, 52, 140, 0.38);
+      --shadow-sm: 0 10px 26px -14px rgba(58, 52, 140, 0.30);
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       background: var(--bg);
+      background-image:
+        radial-gradient(1100px 480px at 100% -8%, rgba(109,94,252,0.12), transparent 60%),
+        radial-gradient(900px 480px at -8% 8%, rgba(18,179,160,0.10), transparent 55%);
+      background-attachment: fixed;
       color: var(--ink);
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ---------- Cabeçalho (hero) ---------- */
     .hero {
-      position: relative;
-      background: var(--brand);
-      background: linear-gradient(135deg, #6d5efc 0%, #9b8cff 55%, #17b6a0 140%);
+      position: relative; overflow: hidden;
+      background: var(--grad);
       color: #fff;
-      padding: 40px 20px 70px;
+      padding: 46px 20px 80px;
       text-align: center;
-      border-radius: 0 0 32px 32px;
+      border-radius: 0 0 40px 40px;
       box-shadow: var(--shadow);
     }
+    .hero::before, .hero::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(34px); pointer-events: none;
+    }
+    .hero::before { width: 280px; height: 280px; background: rgba(255,255,255,0.28); top: -130px; right: -60px; }
+    .hero::after { width: 240px; height: 240px; background: rgba(18,224,200,0.35); bottom: -130px; left: -50px; }
+    .hero > * { position: relative; z-index: 1; }
     .hero .logo {
-      width: 72px; height: 72px; line-height: 72px;
+      width: 80px; height: 80px; line-height: 80px;
       margin: 0 auto 14px;
-      background: rgba(255,255,255,0.18);
-      border-radius: 22px;
-      font-size: 34px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.2);
+      border-radius: 24px;
+      font-size: 40px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 12px 26px rgba(0,0,0,0.15);
     }
-    .hero h1 { margin: 0; font-size: 1.7rem; font-weight: 700; letter-spacing: -0.3px; }
-    .hero p { margin: 6px 0 0; opacity: 0.92; font-size: 1rem; }
+    .hero h1 { margin: 0; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.5px; }
+    .hero p { margin: 7px 0 0; opacity: 0.95; font-size: 1.02rem; }
     .lock-btn {
-      position: absolute; top: 18px; right: 18px;
-      width: 42px; height: 42px; border-radius: 14px;
-      background: rgba(255,255,255,0.18); border: none; color: #fff;
-      font-size: 18px; cursor: pointer; transition: background .15s;
+      position: absolute; top: 18px; right: 18px; z-index: 2;
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); color: #fff;
+      font-size: 18px; cursor: pointer; transition: background .2s, transform .2s;
     }
-    .lock-btn:hover { background: rgba(255,255,255,0.30); }
+    .lock-btn:hover { background: rgba(255,255,255,0.32); transform: translateY(-1px); }
 
     /* ---------- Layout ---------- */
     .wrap { max-width: 980px; margin: -44px auto 60px; padding: 0 16px; position: relative; z-index: 2; }
@@ -92,16 +105,18 @@
       text-transform: uppercase; padding: 6px 8px 10px;
     }
     .turma-item {
-      display: flex; align-items: center; padding: 12px 12px; border-radius: 13px;
-      cursor: pointer; margin-bottom: 4px; transition: background .15s;
+      display: flex; align-items: center; padding: 12px 12px; border-radius: 14px;
+      cursor: pointer; margin-bottom: 4px; transition: background .18s, transform .12s;
     }
-    .turma-item:hover { background: #f4f6fc; }
-    .turma-item.active { background: rgba(109,94,252,0.12); }
-    .turma-item.active .nome { color: var(--brand); font-weight: 700; }
-    .turma-item .dot { width: 11px; height: 11px; border-radius: 50%; margin-right: 11px; flex: 0 0 auto; box-shadow: 0 0 0 3px rgba(0,0,0,0.04); }
+    .turma-item:hover { background: #f3f4fc; }
+    .turma-item:active { transform: scale(0.99); }
+    .turma-item.active { background: linear-gradient(90deg, rgba(109,94,252,0.16), rgba(109,94,252,0.05)); }
+    .turma-item.active .nome { color: var(--brand-ink); font-weight: 800; }
+    .turma-item .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 11px; flex: 0 0 auto; box-shadow: 0 0 0 3px rgba(0,0,0,0.04); transition: box-shadow .18s; }
+    .turma-item.active .dot { box-shadow: 0 0 0 4px rgba(109,94,252,0.18); }
     .turma-item .nome { flex: 1 1 auto; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .turma-item .n { font-size: .74rem; font-weight: 700; color: var(--muted); background: #f1f2f9; padding: 2px 8px; border-radius: 20px; flex: 0 0 auto; }
-    .turma-item.active .n { background: rgba(109,94,252,0.18); color: var(--brand); }
+    .turma-item.active .n { background: rgba(109,94,252,0.18); color: var(--brand-ink); }
     .side-add { width: 100%; margin-top: 8px; }
 
     .panel {
@@ -115,29 +130,44 @@
     .panel-body { padding: 4px 20px 20px; }
 
     /* Links */
-    .link-item { display: flex; align-items: center; margin: 9px 0; }
+    .link-item { display: flex; align-items: center; margin: 10px 0; }
     a.link-btn {
       flex: 1 1 auto; display: flex; align-items: center;
-      padding: 12px 14px; background: #f8f9fd; border: 1px solid var(--border);
-      border-radius: 14px; text-decoration: none; color: var(--ink); font-weight: 600;
-      transition: background .15s, border-color .15s, transform .15s; min-width: 0;
+      padding: 10px 12px; background: #fff; border: 1px solid var(--border);
+      border-radius: 16px; text-decoration: none; color: var(--ink); font-weight: 600;
+      box-shadow: 0 3px 8px -6px rgba(58,52,140,0.35);
+      transition: box-shadow .18s, border-color .18s, transform .18s; min-width: 0;
     }
-    a.link-btn:hover { background: #fff; border-color: var(--brand-2); transform: translateX(2px); }
-    a.link-btn .ico { font-size: 20px; margin-right: 12px; flex: 0 0 auto; }
-    a.link-btn .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    a.link-btn:hover { border-color: var(--brand-2); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+    a.link-btn .ico {
+      width: 46px; height: 46px; flex: 0 0 auto; margin-right: 14px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center; font-size: 23px;
+      background: #eef0fb; color: var(--brand-ink); overflow: hidden;
+    }
+    a.link-btn .ico img.thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+    a.link-btn .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto; }
     a.link-btn .tipo {
-      margin-left: auto; padding-left: 10px; font-size: .68rem; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .5px; flex: 0 0 auto;
+      margin-left: 10px; padding: 4px 9px; font-size: .64rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .6px; flex: 0 0 auto; border-radius: 20px;
     }
-    .tipo.aula { color: #0e9d8a; }
-    .tipo.atividade { color: #d97706; }
-    .tipo.material { color: #8b5cf6; }
-    .tipo.outro { color: #64748b; }
+    .tipo.aula { color: #0e9d8a; background: rgba(14,157,138,0.12); }
+    .tipo.atividade { color: #d97706; background: rgba(217,119,6,0.12); }
+    .tipo.material { color: #8b5cf6; background: rgba(139,92,246,0.12); }
+    .tipo.outro { color: #64748b; background: rgba(100,116,139,0.12); }
+    a.link-btn .go {
+      flex: 0 0 auto; margin-left: 8px; color: var(--muted); font-size: 16px; font-weight: 800;
+      opacity: 0; transform: translateX(-4px); transition: opacity .18s, transform .18s;
+    }
+    a.link-btn:hover .go { opacity: 1; transform: none; color: var(--brand); }
 
     .empty { text-align: center; color: var(--muted); padding: 30px 12px; }
     .empty-big {
       background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-sm);
-      padding: 50px 20px; text-align: center; color: var(--muted);
+      padding: 50px 20px; text-align: center; color: var(--muted); font-weight: 600;
+    }
+    .spinner {
+      width: 34px; height: 34px; border-radius: 50%; margin: 0 auto 14px;
+      border: 4px solid #e7e9f6; border-top-color: var(--brand); animation: spin .8s linear infinite;
     }
 
     /* Botões */
@@ -145,12 +175,14 @@
       display: inline-flex; align-items: center; justify-content: center;
       padding: 10px 16px; border: none; border-radius: 12px; cursor: pointer;
       font-size: .92rem; font-weight: 700; font-family: inherit;
-      background: var(--brand); color: #fff; transition: filter .15s, background .15s;
+      background: var(--grad); color: #fff;
+      box-shadow: 0 8px 20px -10px rgba(109,94,252,0.7);
+      transition: filter .15s, transform .15s, box-shadow .15s;
     }
-    .btn:hover { filter: brightness(1.06); }
-    .btn.ghost { background: #f1f2f9; color: var(--brand); }
-    .btn.ghost:hover { background: #e7e9f6; filter: none; }
-    .btn.ok { background: var(--ok); }
+    .btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .btn.ghost { background: #eef0fb; color: var(--brand-ink); box-shadow: none; }
+    .btn.ghost:hover { background: #e5e8fa; filter: none; }
+    .btn.ok { background: linear-gradient(135deg, #14c2ad, #0e9d8a); box-shadow: 0 8px 20px -10px rgba(18,179,160,0.7); }
     .btn.small { padding: 7px 12px; font-size: .82rem; }
     .icon-btn {
       background: transparent; border: none; cursor: pointer; font-size: 15px; color: var(--muted);
@@ -214,9 +246,16 @@
 
     .footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 34px; }
 
+    .layout { animation: rise .35s ease both; }
+    .sidebar, .panel { transition: box-shadow .2s; }
+    .panel:hover { box-shadow: var(--shadow); }
+
     @media (max-width: 520px) {
-      .hero h1 { font-size: 1.4rem; }
+      .hero h1 { font-size: 1.5rem; }
       .admin-bar .spacer { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
@@ -333,7 +372,9 @@
         var t = state.turmas[i], nl = [];
         for (var j = 0; j < (t.links || []).length; j++) {
           var l = t.links[j];
-          nl.push({ id: l.id, titulo: l.titulo, url: l.url, tipo: l.tipo });
+          var o = { id: l.id, titulo: l.titulo, url: l.url, tipo: l.tipo };
+          if (l.img) o.img = l.img;
+          nl.push(o);
         }
         limpo.turmas.push({ id: t.id, nome: t.nome, cor: t.cor, links: nl });
       }
@@ -440,7 +481,7 @@
       cont.innerHTML = "";
 
       if (!pronto) {
-        cont.innerHTML = '<div class="empty-big">Carregando aulas… ⏳</div>';
+        cont.innerHTML = '<div class="empty-big"><div class="spinner"></div>Carregando aulas…</div>';
         return;
       }
 
@@ -480,9 +521,10 @@
         var tipoClass = ehTipo(lk.tipo) ? lk.tipo : "outro";
         linksHtml += '<div class="link-item">' +
           '<a class="link-btn" href="' + esc(lk.url) + '" target="_blank" rel="noopener">' +
-            '<span class="ico">' + icoDoTipo(lk.tipo) + '</span>' +
+            '<span class="ico">' + thumbHtml(lk) + '</span>' +
             '<span class="txt">' + esc(lk.titulo) + '</span>' +
             '<span class="tipo ' + tipoClass + '">' + esc(lk.tipo || "outro") + '</span>' +
+            '<span class="go">↗</span>' +
           '</a>' +
           (admin ? '<span class="edit-controls">' +
             '<button class="icon-btn" title="Editar" onclick="editLink(' + sel + ',' + li + ')">✏️</button>' +
@@ -643,28 +685,69 @@
       return u || url;
     }
     function decodeHtml(s) { var t = document.createElement("textarea"); t.innerHTML = s; return t.value; }
-    /* Busca o título real da página (o <title>) para nomear o link automaticamente.
+
+    /* ---- Miniatura do link (mascote/imagem da atividade) ---- */
+    function hostDoUrl(url) {
+      try {
+        if (/^https?:\/\//i.test(url)) return url.replace(/^https?:\/\//i, "").split("/")[0];
+        return window.location.host;
+      } catch (e) { return ""; }
+    }
+    function faviconUrl(url) {
+      var host = hostDoUrl(url);
+      return host ? "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=64" : "";
+    }
+    function thumbHtml(lk) {
+      var emoji = icoDoTipo(lk.tipo);
+      var fav = faviconUrl(lk.url);
+      var primary = lk.img || fav;
+      if (!primary) return emoji;
+      var dataFav = (lk.img && fav) ? fav : "";
+      return '<img class="thumb" src="' + esc(primary) + '" alt="" data-fav="' + esc(dataFav) + '" data-emoji="' + esc(emoji) + '" onerror="thumbFallback(this)">';
+    }
+    function thumbFallback(img) {
+      var fav = img.getAttribute("data-fav");
+      if (fav) { img.removeAttribute("data-fav"); img.src = fav; return; }
+      var s = img.parentNode; if (s) s.textContent = img.getAttribute("data-emoji") || "🔗";
+    }
+    function absolutizar(u, base) {
+      if (/^https?:\/\//i.test(u)) return u;
+      try { return new URL(u, base).href; } catch (e) {
+        if (u.charAt(0) === "/") return base.replace(/^(https?:\/\/[^\/]+).*/i, "$1") + u;
+        return u;
+      }
+    }
+    function extrairImagem(html, baseUrl) {
+      var pats = [
+        /<meta[^>]+property=["']og:image["'][^>]*content=["']([^"']+)["']/i,
+        /<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:image["']/i,
+        /<meta[^>]+name=["']twitter:image[^"']*["'][^>]*content=["']([^"']+)["']/i,
+        /<link[^>]+rel=["'][^"']*apple-touch-icon[^"']*["'][^>]*href=["']([^"']+)["']/i
+      ];
+      for (var i = 0; i < pats.length; i++) { var m = html.match(pats[i]); if (m && m[1]) return absolutizar(m[1], baseUrl); }
+      return "";
+    }
+    /* Busca o título real e a imagem de destaque (mascote) da página.
        Funciona para páginas do mesmo endereço (ex.: seus sites em vidalprof.github.io). */
-    function buscarTituloDaPagina(url, cb) {
+    function buscarMetaDaPagina(url, cb) {
       try {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
         xhr.timeout = 7000;
         xhr.onreadystatechange = function () {
           if (xhr.readyState !== 4) return;
+          var res = { titulo: "", img: "" };
           if (xhr.status >= 200 && xhr.status < 300) {
             var m = xhr.responseText.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-            if (m && m[1]) {
-              var t = decodeHtml(m[1]).replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "");
-              if (t) { cb(t); return; }
-            }
+            if (m && m[1]) res.titulo = decodeHtml(m[1]).replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "");
+            res.img = extrairImagem(xhr.responseText, url);
           }
-          cb(null);
+          cb(res);
         };
-        xhr.onerror = function () { cb(null); };
-        xhr.ontimeout = function () { cb(null); };
+        xhr.onerror = function () { cb({ titulo: "", img: "" }); };
+        xhr.ontimeout = function () { cb({ titulo: "", img: "" }); };
         xhr.send();
-      } catch (e) { cb(null); }
+      } catch (e) { cb({ titulo: "", img: "" }); }
     }
     function acharLinkPorId(id) {
       for (var i = 0; i < (state.turmas || []).length; i++) {
@@ -690,22 +773,29 @@
       var tipo = tipoEl ? tipoEl.value : (li == null ? "aula" : (state.turmas[ti].links[li].tipo || "aula"));
       state.turmas[ti].links = toArray(state.turmas[ti].links);
       if (li == null) {
-        var buscar = !titulo;                 // sem título digitado -> tenta pegar o nome real da página
+        var buscar = !titulo;                 // sem título digitado -> pega nome + mascote da página
         var novoId = uid();
         state.turmas[ti].links.push({ id: novoId, titulo: titulo || tituloDoLink(url), url: url, tipo: tipo });
         persist(); closeModal(); render();
-        if (buscar) {
-          toast("Buscando o nome da página...");
-          buscarTituloDaPagina(url, function (t) {
-            if (!t) return;
-            var lk = acharLinkPorId(novoId);
-            if (lk) { lk.titulo = t; persist(); render(); toast("Nome atualizado: " + t); }
-          });
-        }
+        toast("Buscando nome e imagem da página...");
+        buscarMetaDaPagina(url, function (meta) {
+          var lk = acharLinkPorId(novoId);
+          if (!lk) return;
+          var mudou = false;
+          if (buscar && meta.titulo && lk.titulo === tituloDoLink(url)) { lk.titulo = meta.titulo; mudou = true; }
+          if (meta.img && !lk.img) { lk.img = meta.img; mudou = true; }
+          if (mudou) { persist(); render(); }
+        });
       } else {
         var l = state.turmas[ti].links[li];
-        l.titulo = titulo || tituloDoLink(url); l.url = url; l.tipo = tipo;
+        var idEdit = l.id, urlMudou = (l.url !== url);
+        l.titulo = titulo || l.titulo || tituloDoLink(url); l.url = url; l.tipo = tipo;
+        if (urlMudou) l.img = "";
         persist(); closeModal(); render();
+        if (urlMudou) buscarMetaDaPagina(url, function (meta) {
+          var lk = acharLinkPorId(idEdit);
+          if (lk && meta.img && !lk.img) { lk.img = meta.img; persist(); render(); }
+        });
       }
     }
     function delLink(ti, li) {
@@ -752,7 +842,9 @@
         var t = state.turmas[i], nl = [];
         for (var j = 0; j < (t.links || []).length; j++) {
           var l = t.links[j];
-          nl.push({ id: l.id, titulo: l.titulo, url: l.url, tipo: l.tipo });
+          var o = { id: l.id, titulo: l.titulo, url: l.url, tipo: l.tipo };
+          if (l.img) o.img = l.img;
+          nl.push(o);
         }
         limpo.turmas.push({ id: t.id, nome: t.nome, cor: t.cor, links: nl });
       }
