@@ -718,13 +718,32 @@
       }
     }
     function extrairImagem(html, baseUrl) {
-      var pats = [
-        /<meta[^>]+property=["']og:image["'][^>]*content=["']([^"']+)["']/i,
-        /<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:image["']/i,
+      /* 1) Imagem de destaque declarada (og:image / twitter:image) */
+      var metas = [
+        /<meta[^>]+property=["']og:image(?::url)?["'][^>]*content=["']([^"']+)["']/i,
+        /<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:image(?::url)?["']/i,
         /<meta[^>]+name=["']twitter:image[^"']*["'][^>]*content=["']([^"']+)["']/i,
-        /<link[^>]+rel=["'][^"']*apple-touch-icon[^"']*["'][^>]*href=["']([^"']+)["']/i
+        /<meta[^>]+content=["']([^"']+)["'][^>]*name=["']twitter:image/i
       ];
-      for (var i = 0; i < pats.length; i++) { var m = html.match(pats[i]); if (m && m[1]) return absolutizar(m[1], baseUrl); }
+      for (var i = 0; i < metas.length; i++) { var m = html.match(metas[i]); if (m && m[1]) return absolutizar(m[1], baseUrl); }
+      /* 2) Primeira imagem de verdade no corpo (normalmente o mascote da atividade) */
+      var imgs = html.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/ig);
+      if (imgs) {
+        for (var j = 0; j < imgs.length; j++) {
+          var mm = imgs[j].match(/src\s*=\s*["']([^"']+)["']/i);
+          if (mm && mm[1]) {
+            var u = mm[1];
+            if (/^data:image\//i.test(u)) return u;
+            if (!/sprite|pixel|spacer|blank|1x1|tracking|analytics/i.test(u)) return absolutizar(u, baseUrl);
+          }
+        }
+      }
+      /* 3) Ícone do site (apple-touch-icon ou favicon declarado) */
+      var icons = [
+        /<link[^>]+rel=["'][^"']*apple-touch-icon[^"']*["'][^>]*href=["']([^"']+)["']/i,
+        /<link[^>]+rel=["'][^"']*icon[^"']*["'][^>]*href=["']([^"']+)["']/i
+      ];
+      for (var k = 0; k < icons.length; k++) { var mi = html.match(icons[k]); if (mi && mi[1]) return absolutizar(mi[1], baseUrl); }
       return "";
     }
     /* Busca o título real e a imagem de destaque (mascote) da página.
@@ -788,13 +807,13 @@
         });
       } else {
         var l = state.turmas[ti].links[li];
-        var idEdit = l.id, urlMudou = (l.url !== url);
+        var idEdit = l.id;
         l.titulo = titulo || l.titulo || tituloDoLink(url); l.url = url; l.tipo = tipo;
-        if (urlMudou) l.img = "";
         persist(); closeModal(); render();
-        if (urlMudou) buscarMetaDaPagina(url, function (meta) {
+        /* Sempre tenta atualizar o mascote da página ao salvar a edição. */
+        buscarMetaDaPagina(url, function (meta) {
           var lk = acharLinkPorId(idEdit);
-          if (lk && meta.img && !lk.img) { lk.img = meta.img; persist(); render(); }
+          if (lk && meta.img) { lk.img = meta.img; persist(); render(); }
         });
       }
     }
