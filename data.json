@@ -1,25 +1,5 @@
 {
   "titulo": "Central de Aulas",
   "subtitulo": "E.B.M Vidal Ramos",
-  "turmas": [
-    {
-      "id": "turma-exemplo",
-      "nome": "Turma de Exemplo",
-      "cor": "#6d5efc",
-      "links": [
-        {
-          "id": "link-o-solo",
-          "titulo": "Atividade: O Solo",
-          "url": "o-solo.html",
-          "tipo": "atividade"
-        },
-        {
-          "id": "link-exemplo-video",
-          "titulo": "Vídeo de exemplo (YouTube)",
-          "url": "https://www.youtube.com/",
-          "tipo": "aula"
-        }
-      ]
-    }
-  ]
+  "turmas": []
 }

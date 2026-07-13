@@ -341,10 +341,25 @@
     /* Salva a alteração: na nuvem (todos veem na hora) ou local */
     function persist() {
       if (cloud && dbRef) {
-        dbRef.set(cleanState()).then(function () {}, function () { toast("Erro ao salvar na nuvem", "err"); });
+        dbRef.set(cleanState()).then(function () {}, function (err) { avisoErroNuvem(err); });
       } else {
         saveDraft();
       }
+    }
+    function avisoErroNuvem(err) {
+      var msg = (err && err.message) ? err.message : "";
+      openModal(
+        "<h3>⚠️ Não consegui salvar na nuvem</h3>" +
+        "<p>Sua alteração apareceu na tela, mas <b>não foi salva</b> no Firebase — por isso ela some quando você recarrega.</p>" +
+        "<p>Causa mais provável: as <b>regras</b> do banco ainda não permitem gravar. Para corrigir (1 minuto):</p>" +
+        '<ol style="padding-left:20px;line-height:1.8;">' +
+        "<li>Abra o <b>Realtime Database</b> do seu projeto → aba <b>Regras</b>.</li>" +
+        "<li>Cole exatamente:<br><code style=\"display:block;background:#f1f2f9;padding:8px;border-radius:8px;margin-top:4px;\">{ \"rules\": { \"portal\": { \".read\": true, \".write\": \"auth != null\" } } }</code></li>" +
+        "<li>Clique em <b>Publicar</b> e tente de novo.</li>" +
+        "</ol>" +
+        (msg ? '<div class="hint">Detalhe técnico: ' + esc(msg) + '</div>' : '') +
+        '<div class="modal-actions"><button class="btn" onclick="closeModal()">Entendi</button></div>'
+      );
     }
 
     /* Inicializa a nuvem (Firebase). Retorna true se ativada. */
@@ -610,10 +625,41 @@
       );
       setTimeout(function () { var e = document.getElementById(li == null ? "mLu" : "mLt"); if (e) e.focus(); }, 50);
     }
-    /* Gera um nome amigável a partir da URL (sem http:// e www.) */
+    /* Gera um nome amigável a partir da URL (sem http:// e www.) — usado como reserva */
     function tituloDoLink(url) {
       var u = url.replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\/+$/, "");
       return u || url;
+    }
+    function decodeHtml(s) { var t = document.createElement("textarea"); t.innerHTML = s; return t.value; }
+    /* Busca o título real da página (o <title>) para nomear o link automaticamente.
+       Funciona para páginas do mesmo endereço (ex.: seus sites em vidalprof.github.io). */
+    function buscarTituloDaPagina(url, cb) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.timeout = 7000;
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState !== 4) return;
+          if (xhr.status >= 200 && xhr.status < 300) {
+            var m = xhr.responseText.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+            if (m && m[1]) {
+              var t = decodeHtml(m[1]).replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "");
+              if (t) { cb(t); return; }
+            }
+          }
+          cb(null);
+        };
+        xhr.onerror = function () { cb(null); };
+        xhr.ontimeout = function () { cb(null); };
+        xhr.send();
+      } catch (e) { cb(null); }
+    }
+    function acharLinkPorId(id) {
+      for (var i = 0; i < (state.turmas || []).length; i++) {
+        var links = toArray(state.turmas[i].links);
+        for (var j = 0; j < links.length; j++) if (links[j].id === id) return links[j];
+      }
+      return null;
     }
     function normalizaUrl(u) {
       u = u.replace(/^\s+|\s+$/g, "");
@@ -628,13 +674,27 @@
       if (!url) { toast("Cole o link (URL)", "err"); return; }
       var tEl = document.getElementById("mLt");
       var titulo = tEl ? tEl.value.replace(/^\s+|\s+$/g, "") : "";
-      if (!titulo) titulo = tituloDoLink(url);
       var tipoEl = document.getElementById("mLtipo");
       var tipo = tipoEl ? tipoEl.value : (li == null ? "aula" : (state.turmas[ti].links[li].tipo || "aula"));
       state.turmas[ti].links = toArray(state.turmas[ti].links);
-      if (li == null) state.turmas[ti].links.push({ id: uid(), titulo: titulo, url: url, tipo: tipo });
-      else { var l = state.turmas[ti].links[li]; l.titulo = titulo; l.url = url; l.tipo = tipo; }
-      persist(); closeModal(); render();
+      if (li == null) {
+        var buscar = !titulo;                 // sem título digitado -> tenta pegar o nome real da página
+        var novoId = uid();
+        state.turmas[ti].links.push({ id: novoId, titulo: titulo || tituloDoLink(url), url: url, tipo: tipo });
+        persist(); closeModal(); render();
+        if (buscar) {
+          toast("Buscando o nome da página...");
+          buscarTituloDaPagina(url, function (t) {
+            if (!t) return;
+            var lk = acharLinkPorId(novoId);
+            if (lk) { lk.titulo = t; persist(); render(); toast("Nome atualizado: " + t); }
+          });
+        }
+      } else {
+        var l = state.turmas[ti].links[li];
+        l.titulo = titulo || tituloDoLink(url); l.url = url; l.tipo = tipo;
+        persist(); closeModal(); render();
+      }
     }
     function delLink(ti, li) {
       state.turmas[ti].links = toArray(state.turmas[ti].links);
