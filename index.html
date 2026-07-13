@@ -2,369 +2,525 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Atividade Interativa: O Solo - E.B.M Vidal Ramos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Links — E.B.M Vidal Ramos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
   <style>
+    :root {
+      --bg: #f4f6fc;
+      --card: #ffffff;
+      --ink: #2b2d42;
+      --muted: #7a7f9a;
+      --brand: #6d5efc;
+      --brand-2: #9b8cff;
+      --accent: #17b6a0;
+      --border: #e8eaf4;
+      --danger: #ef5b6f;
+      --ok: #17b6a0;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(64, 66, 120, 0.10);
+      --shadow-sm: 0 4px 14px rgba(64, 66, 120, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
     body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      margin: 20px;
-      background-color: #f9f9f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    header h1 {
-      margin: 0;
-      color: #2c3e50;
-    }
-    header h2 {
-      margin: 0;
-      color: #34495e;
-      font-size: 1.2em;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    }
-    .input-field {
-      margin-bottom: 20px;
-    }
-    .input-field label {
-      font-weight: bold;
-    }
-    .video-container {
-      text-align: center;
-      margin: 20px 0;
-    }
-    .quiz-section ol {
-      padding-left: 20px;
-    }
-    .quiz-section li {
-      margin-bottom: 20px;
-    }
-    .quiz-section label {
-      cursor: pointer;
-    }
-    .btn {
-      display: block;
-      padding: 10px 20px;
-      background-color: #2980b9;
+    a { color: inherit; }
+
+    /* ---------- Cabeçalho (hero) ---------- */
+    .hero {
+      position: relative;
+      background: var(--brand);
+      background: linear-gradient(135deg, #6d5efc 0%, #9b8cff 55%, #17b6a0 140%);
       color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 1em;
-      cursor: pointer;
-      margin: 20px auto;
-    }
-    .btn:hover {
-      background-color: #1f6391;
-    }
-    #resultado {
+      padding: 40px 20px 70px;
       text-align: center;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #27ae60;
-      margin-top: 20px;
+      border-radius: 0 0 32px 32px;
+      box-shadow: var(--shadow);
+    }
+    .hero .logo {
+      width: 72px; height: 72px; line-height: 72px;
+      margin: 0 auto 14px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 22px;
+      font-size: 34px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+    }
+    .hero h1 { margin: 0; font-size: 1.7rem; font-weight: 700; letter-spacing: -0.3px; }
+    .hero p { margin: 6px 0 0; opacity: 0.92; font-size: 1rem; }
+    .lock-btn {
+      position: absolute; top: 18px; right: 18px;
+      width: 42px; height: 42px; border-radius: 14px;
+      background: rgba(255,255,255,0.18); border: none; color: #fff;
+      font-size: 18px; cursor: pointer; transition: background .15s;
+    }
+    .lock-btn:hover { background: rgba(255,255,255,0.30); }
+
+    /* ---------- Layout ---------- */
+    .wrap { max-width: 980px; margin: -44px auto 60px; padding: 0 16px; position: relative; z-index: 2; }
+
+    /* Barra do administrador */
+    .admin-bar {
+      display: none; flex-wrap: wrap; align-items: center;
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 12px 16px; margin-bottom: 22px;
+    }
+    .admin-bar.on { display: flex; }
+    .admin-bar .tag {
+      background: rgba(109,94,252,0.12); color: var(--brand);
+      font-weight: 700; font-size: .85rem; padding: 6px 12px; border-radius: 20px; margin-right: 8px;
+    }
+    .admin-bar .spacer { flex: 1 1 auto; min-width: 8px; }
+    .admin-bar .btn { margin: 4px 0 4px 8px; }
+
+    /* ---------- Grade de turmas ---------- */
+    .grid { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+    .turma {
+      flex: 1 1 300px; max-width: 100%;
+      margin: 10px; background: var(--card);
+      border-radius: var(--radius); box-shadow: var(--shadow-sm);
+      overflow: hidden; border: 1px solid var(--border);
+      transition: box-shadow .18s, transform .18s;
+      align-self: flex-start;
+    }
+    .turma:hover { box-shadow: var(--shadow); }
+    .turma-top { height: 6px; background: var(--brand); }
+    .turma-head {
+      display: flex; align-items: center; padding: 16px 18px 10px; cursor: pointer;
+    }
+    .turma-head h2 { margin: 0; font-size: 1.15rem; flex: 1 1 auto; letter-spacing: -0.2px; }
+    .turma-head .count {
+      color: var(--muted); font-size: .78rem; font-weight: 700;
+      background: #f1f2f9; padding: 3px 9px; border-radius: 20px; margin-left: 8px; white-space: nowrap;
+    }
+    .turma-head .chev { color: var(--muted); margin-right: 10px; transition: transform .2s; font-size: 12px; }
+    .turma.collapsed .chev { transform: rotate(-90deg); }
+    .turma.collapsed .turma-body { display: none; }
+    .turma-body { padding: 4px 16px 18px; }
+
+    /* Links */
+    .link-item { display: flex; align-items: center; margin: 9px 0; }
+    a.link-btn {
+      flex: 1 1 auto; display: flex; align-items: center;
+      padding: 12px 14px; background: #f8f9fd; border: 1px solid var(--border);
+      border-radius: 14px; text-decoration: none; color: var(--ink); font-weight: 600;
+      transition: background .15s, border-color .15s, transform .15s; min-width: 0;
+    }
+    a.link-btn:hover { background: #fff; border-color: var(--brand-2); transform: translateX(2px); }
+    a.link-btn .ico { font-size: 20px; margin-right: 12px; flex: 0 0 auto; }
+    a.link-btn .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    a.link-btn .tipo {
+      margin-left: auto; padding-left: 10px; font-size: .68rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .5px; flex: 0 0 auto;
+    }
+    .tipo.aula { color: #0e9d8a; }
+    .tipo.atividade { color: #d97706; }
+    .tipo.material { color: #8b5cf6; }
+    .tipo.outro { color: #64748b; }
+
+    .empty { text-align: center; color: var(--muted); padding: 30px 12px; }
+    .empty-big {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+      padding: 50px 20px; text-align: center; color: var(--muted);
+    }
+
+    /* Botões */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 16px; border: none; border-radius: 12px; cursor: pointer;
+      font-size: .92rem; font-weight: 700; font-family: inherit;
+      background: var(--brand); color: #fff; transition: filter .15s, background .15s;
+    }
+    .btn:hover { filter: brightness(1.06); }
+    .btn.ghost { background: #f1f2f9; color: var(--brand); }
+    .btn.ghost:hover { background: #e7e9f6; filter: none; }
+    .btn.ok { background: var(--ok); }
+    .btn.small { padding: 7px 12px; font-size: .82rem; }
+    .icon-btn {
+      background: transparent; border: none; cursor: pointer; font-size: 15px; color: var(--muted);
+      padding: 6px; border-radius: 9px; line-height: 1;
+    }
+    .icon-btn:hover { background: #f1f2f9; color: var(--ink); }
+    .icon-btn.del:hover { color: var(--danger); background: #fdeef0; }
+    .edit-controls { display: flex; align-items: center; }
+    .turma-actions { display: flex; flex-wrap: wrap; margin-top: 12px; }
+    .turma-actions .btn { margin: 4px 8px 0 0; }
+
+    /* Modal */
+    .overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(43, 45, 66, 0.55); display: none; z-index: 50;
+      padding: 16px; text-align: center;
+    }
+    .overlay:before { content: ""; display: inline-block; height: 100%; vertical-align: middle; }
+    .overlay.show { display: block; }
+    .modal {
+      display: inline-block; vertical-align: middle; text-align: left; width: 100%; max-width: 480px;
+      background: var(--card); border-radius: 20px; box-shadow: var(--shadow);
+      padding: 24px; max-height: 88vh; overflow: auto;
+    }
+    .modal h3 { margin: 0 0 16px; font-size: 1.2rem; }
+    .field { margin-bottom: 15px; }
+    .field label { display: block; font-weight: 700; margin-bottom: 6px; font-size: .88rem; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 12px;
+      font-size: .95rem; font-family: inherit; color: var(--ink); background: #fbfbfe;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none; border-color: var(--brand-2); background: #fff;
+    }
+    .field textarea { min-height: 130px; resize: vertical; }
+    .field .hint { color: var(--muted); font-size: .8rem; margin-top: 6px; }
+    .modal-actions { text-align: right; margin-top: 20px; }
+    .modal-actions .btn { margin-left: 8px; }
+    .color-row { display: flex; align-items: center; }
+    .color-row input[type=color] { width: 52px; height: 44px; padding: 3px; margin-right: 10px; flex: 0 0 auto; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; margin-left: -140px; width: 280px;
+      background: var(--ink); color: #fff; padding: 13px 18px; border-radius: 12px;
+      box-shadow: var(--shadow); z-index: 100; opacity: 0; transition: opacity .3s;
+      text-align: center; font-weight: 600; font-size: .92rem;
+    }
+    .toast.show { opacity: 1; }
+    .toast.ok { background: var(--ok); }
+    .toast.err { background: var(--danger); }
+
+    .footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 34px; }
+
+    @media (max-width: 520px) {
+      .hero h1 { font-size: 1.4rem; }
+      .admin-bar .spacer { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Cabeçalho: Nome do estudante e nome da escola -->
-    <header>
-      <h1>Atividade Interativa: O Solo</h1>
-      <h2>E.B.M Vidal Ramos</h2>
-    </header>
-    
-    <div class="input-field">
-      <label for="studentName">Nome do Estudante:</label><br>
-      <input type="text" id="studentName" placeholder="Digite seu nome" style="width:100%; padding:8px;">
+  <div class="hero">
+    <button class="lock-btn" id="lockBtn" title="Área do professor" onclick="onLockClick()">🔒</button>
+    <div class="logo" id="logo">📚</div>
+    <h1 id="siteTitulo">Carregando...</h1>
+    <p id="siteSubtitulo"></p>
+  </div>
+
+  <div class="wrap">
+    <div class="admin-bar" id="adminBar">
+      <span class="tag">✏️ Modo professor</span>
+      <span class="spacer"></span>
+      <button class="btn small ghost" onclick="openHeaderEdit()">Editar título</button>
+      <button class="btn small" onclick="addTurma()">+ Nova turma</button>
+      <button class="btn small ok" onclick="publicar()">⬇️ Publicar</button>
+      <button class="btn small ghost" onclick="logout()">Sair</button>
     </div>
 
-    <!-- Texto introdutório sobre o tema -->
-    <section class="introducao">
-      <h3>Introdução</h3>
-      <p>
-        O solo é a camada superficial da Terra onde ocorrem os processos vitais para a manutenção da vida. Ele é formado pela decomposição de rochas e matéria orgânica, compondo um ambiente rico que, além de oferecer suporte físico às plantas, abriga inúmeros organismos que colaboram na ciclagem dos nutrientes. A qualidade do solo influencia diretamente a produção de alimentos, a manutenção da biodiversidade e o equilíbrio ambiental.
-      </p>
-    </section>
-    
-    <!-- Vídeo didático sobre o tema -->
-    <section class="video-container">
-  <h3>Vídeo Didático</h3>
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/-mRGUVE7dt0" 
-    title="Novo vídeo sobre o solo" frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-  </iframe>
-</section>
-    
-    <!-- Seção do Quiz -->
-    <section class="quiz-section">
-      <h3>Questionário: Teste seus conhecimentos sobre o Solo</h3>
-      <form id="quizForm">
-        <ol>
-          <!-- Questão 1 -->
-          <li>
-            <p><strong>1. O que é solo?</strong></p>
-            <label><input type="radio" name="q1" value="A"> A) Uma placa tectônica.</label><br>
-            <label><input type="radio" name="q1" value="B"> B) A camada superior da Terra onde se desenvolve a vida.</label><br>
-            <label><input type="radio" name="q1" value="C"> C) Uma formação rochosa profunda.</label><br>
-            <label><input type="radio" name="q1" value="D"> D) A parte líquida do planeta.</label><br>
-            <label><input type="radio" name="q1" value="E"> E) Um elemento inorgânico do meio ambiente.</label>
-          </li>
-          
-          <!-- Questão 2 -->
-          <li>
-            <p><strong>2. Quais são os componentes principais do solo?</strong></p>
-            <label><input type="radio" name="q2" value="A"> A) Água, ar, matéria orgânica e partículas minerais.</label><br>
-            <label><input type="radio" name="q2" value="B"> B) Apenas rochas.</label><br>
-            <label><input type="radio" name="q2" value="C"> C) Apenas ar.</label><br>
-            <label><input type="radio" name="q2" value="D"> D) Água e minerais.</label><br>
-            <label><input type="radio" name="q2" value="E"> E) Matéria orgânica e ar.</label>
-          </li>
-          
-          <!-- Questão 3 -->
-          <li>
-            <p><strong>3. Como se forma o solo?</strong></p>
-            <label><input type="radio" name="q3" value="A"> A) Por deposição de sedimentos.</label><br>
-            <label><input type="radio" name="q3" value="B"> B) Pela decomposição de resíduos de animais.</label><br>
-            <label><input type="radio" name="q3" value="C"> C) Pela erosão e desintegração das rochas.</label><br>
-            <label><input type="radio" name="q3" value="D"> D) Pela decomposição exclusiva da vegetação.</label><br>
-            <label><input type="radio" name="q3" value="E"> E) Pela atividade vulcânica apenas.</label>
-          </li>
-          
-          <!-- Questão 4 -->
-          <li>
-            <p><strong>4. Qual a função principal do solo para as plantas?</strong></p>
-            <label><input type="radio" name="q4" value="A"> A) Servir apenas de abrigo para as raízes.</label><br>
-            <label><input type="radio" name="q4" value="B"> B) Proporcionar um ambiente seco para o crescimento.</label><br>
-            <label><input type="radio" name="q4" value="C"> C) Fornecer nutrientes e água para seu desenvolvimento.</label><br>
-            <label><input type="radio" name="q4" value="D"> D) Sustentar apenas o peso das folhas.</label><br>
-            <label><input type="radio" name="q4" value="E"> E) Proteger os animais que nele vivem.</label>
-          </li>
-          
-          <!-- Questão 5 -->
-          <li>
-            <p><strong>5. Qual é a importância da matéria orgânica presente no solo?</strong></p>
-            <label><input type="radio" name="q5" value="A"> A) Aumentar a acidez do solo.</label><br>
-            <label><input type="radio" name="q5" value="B"> B) Diminuir a fertilidade.</label><br>
-            <label><input type="radio" name="q5" value="C"> C) Melhorar a capacidade de retenção de água e nutrientes.</label><br>
-            <label><input type="radio" name="q5" value="D"> D) Reduzir a biodiversidade.</label><br>
-            <label><input type="radio" name="q5" value="E"> E) Tornar o solo mais duro.</label>
-          </li>
-          
-          <!-- Questão 6 -->
-          <li>
-            <p><strong>6. Qual desses solos é caracterizado por ter partículas maiores e permitir que a água escoe rapidamente?</strong></p>
-            <label><input type="radio" name="q6" value="A"> A) Solo argiloso.</label><br>
-            <label><input type="radio" name="q6" value="B"> B) Solo arenoso.</label><br>
-            <label><input type="radio" name="q6" value="C"> C) Solo humoso.</label><br>
-            <label><input type="radio" name="q6" value="D"> D) Solo fértil.</label><br>
-            <label><input type="radio" name="q6" value="E"> E) Solo compactado.</label>
-          </li>
-          
-          <!-- Questão 7 -->
-          <li>
-            <p><strong>7. Qual tipo de solo retém mais água?</strong></p>
-            <label><input type="radio" name="q7" value="A"> A) Solo arenoso.</label><br>
-            <label><input type="radio" name="q7" value="B"> B) Solo argiloso.</label><br>
-            <label><input type="radio" name="q7" value="C"> C) Solo pedregoso.</label><br>
-            <label><input type="radio" name="q7" value="D"> D) Solo biodiverso.</label><br>
-            <label><input type="radio" name="q7" value="E"> E) Solo grudento.</label>
-          </li>
-          
-          <!-- Questão 8 -->
-          <li>
-            <p><strong>8. Qual dos seguintes fatores pode causar a degradação do solo?</strong></p>
-            <label><input type="radio" name="q8" value="A"> A) Plantio de árvores.</label><br>
-            <label><input type="radio" name="q8" value="B"> B) Práticas agrícolas sustentáveis.</label><br>
-            <label><input type="radio" name="q8" value="C"> C) Uso inadequado de agrotóxicos.</label><br>
-            <label><input type="radio" name="q8" value="D"> D) Adubação orgânica.</label><br>
-            <label><input type="radio" name="q8" value="E"> E) Irrigação controlada.</label>
-          </li>
-          
-          <!-- Questão 9 -->
-          <li>
-            <p><strong>9. O que é a erosão do solo?</strong></p>
-            <label><input type="radio" name="q9" value="A"> A) Formação de novas partículas orgânicas.</label><br>
-            <label><input type="radio" name="q9" value="B"> B) Processo de renovação das plantas.</label><br>
-            <label><input type="radio" name="q9" value="C"> C) Desgaste do solo causado pela água, vento ou atividades humanas.</label><br>
-            <label><input type="radio" name="q9" value="D"> D) Transformação do solo em rocha.</label><br>
-            <label><input type="radio" name="q9" value="E"> E) Crescimento de microorganismos.</label>
-          </li>
-          
-          <!-- Questão 10 -->
-          <li>
-            <p><strong>10. Qual prática agrícola ajuda na conservação do solo?</strong></p>
-            <label><input type="radio" name="q10" value="A"> A) Desmatamento.</label><br>
-            <label><input type="radio" name="q10" value="B"> B) Monocultura sem rodízio.</label><br>
-            <label><input type="radio" name="q10" value="C"> C) Rota&ccedil;&atilde;o de culturas.</label><br>
-            <label><input type="radio" name="q10" value="D"> D) Uso excessivo de agrot&oacute;xicos.</label><br>
-            <label><input type="radio" name="q10" value="E"> E) Implantação de áreas impermeáveis.</label>
-          </li>
-          
-          <!-- Questão 11 -->
-          <li>
-            <p><strong>11. Qual o papel das minhocas no solo?</strong></p>
-            <label><input type="radio" name="q11" value="A"> A) Poluir o solo.</label><br>
-            <label><input type="radio" name="q11" value="B"> B) Aumentar a compactação.</label><br>
-            <label><input type="radio" name="q11" value="C"> C) Ajudar na aeração e decomposição da matéria orgânica.</label><br>
-            <label><input type="radio" name="q11" value="D"> D) Substituir a matéria orgânica.</label><br>
-            <label><input type="radio" name="q11" value="E"> E) Reduzir a biodiversidade.</label>
-          </li>
-          
-          <!-- Questão 12 -->
-          <li>
-            <p><strong>12. Como podemos melhorar a qualidade do solo?</strong></p>
-            <label><input type="radio" name="q12" value="A"> A) Removendo a vegeta&ccedil;&atilde;o.</label><br>
-            <label><input type="radio" name="q12" value="B"> B) Realizando a fertiliza&ccedil;&atilde;o e aduba&ccedil;&atilde;o.</label><br>
-            <label><input type="radio" name="q12" value="C"> C) Incendiando &aacute;reas agr&iacute;colas.</label><br>
-            <label><input type="radio" name="q12" value="D"> D) Usando pesticidas em excesso.</label><br>
-            <label><input type="radio" name="q12" value="E"> E) Evitando a irriga&ccedil;&atilde;o.</label>
-          </li>
-          
-          <!-- Questão 13 -->
-          <li>
-            <p><strong>13. Qual é a consequência do desmatamento para o solo?</strong></p>
-            <label><input type="radio" name="q13" value="A"> A) Aumento da fertilidade.</label><br>
-            <label><input type="radio" name="q13" value="B"> B) Redução da erosão.</label><br>
-            <label><input type="radio" name="q13" value="C"> C) Perda de matéria orgânica e aumento da erosão.</label><br>
-            <label><input type="radio" name="q13" value="D"> D) Melhoria na qualidade da água.</label><br>
-            <label><input type="radio" name="q13" value="E"> E) Crescimento de novas plantas.</label>
-          </li>
-          
-          <!-- Questão 14 -->
-          <li>
-            <p><strong>14. O que é a aduba&ccedil;&atilde;o?</strong></p>
-            <label><input type="radio" name="q14" value="A"> A) Processo de irriga&ccedil;&atilde;o do solo.</label><br>
-            <label><input type="radio" name="q14" value="B"> B) T&eacute;cnica para compactar o solo.</label><br>
-            <label><input type="radio" name="q14" value="C"> C) Aplicação de nutrientes para melhorar a fertilidade.</label><br>
-            <label><input type="radio" name="q14" value="D"> D) Remoção da camada superficial do solo.</label><br>
-            <label><input type="radio" name="q14" value="E"> E) Secagem do solo.</label>
-          </li>
-          
-          <!-- Questão 15 -->
-          <li>
-            <p><strong>15. Por que o solo é considerado um recurso n&atilde;o renov&aacute;vel?</strong></p>
-            <label><input type="radio" name="q15" value="A"> A) Porque se forma instantaneamente.</label><br>
-            <label><input type="radio" name="q15" value="B"> B) Porque sua forma&ccedil;&atilde;o leva muitos anos.</label><br>
-            <label><input type="radio" name="q15" value="C"> C) Porque pode ser facilmente reproduzido.</label><br>
-            <label><input type="radio" name="q15" value="D"> D) Porque n&atilde;o &eacute; importante para a agricultura.</label><br>
-            <label><input type="radio" name="q15" value="E"> E) Porque sua composi&ccedil;&atilde;o jamais se altera.</label>
-          </li>
-          
-          <!-- Questão 16 -->
-          <li>
-            <p><strong>16. Qual a rela&ccedil;&atilde;o entre o solo e a preserva&ccedil;&atilde;o da &aacute;gua?</strong></p>
-            <label><input type="radio" name="q16" value="A"> A) O solo transforma a &aacute;gua em rocha.</label><br>
-            <label><input type="radio" name="q16" value="B"> B) Um solo bem estruturado mantém a umidade necess&aacute;ria para as plantas.</label><br>
-            <label><input type="radio" name="q16" value="C"> C) O solo n&atilde;o tem rela&ccedil;&atilde;o com a &aacute;gua.</label><br>
-            <label><input type="radio" name="q16" value="D"> D) O solo impede que a &aacute;gua atinja as ra&iacute;zes.</label><br>
-            <label><input type="radio" name="q16" value="E"> E) O solo acelera a evapora&ccedil;&atilde;o da &aacute;gua.</label>
-          </li>
-          
-          <!-- Questão 17 -->
-          <li>
-            <p><strong>17. O que &eacute; a compacta&ccedil;&atilde;o do solo e quais s&atilde;o seus efeitos?</strong></p>
-            <label><input type="radio" name="q17" value="A"> A) Compacta&ccedil;&atilde;o aumenta a aera&ccedil;&atilde;o do solo.</label><br>
-            <label><input type="radio" name="q17" value="B"> B) Compacta&ccedil;&atilde;o provoca adensamento, dificultando a penetra&ccedil;&atilde;o de &aacute;gua e ra&iacute;zes.</label><br>
-            <label><input type="radio" name="q17" value="C"> C) Compacta&ccedil;&atilde;o melhora a absor&ccedil;&atilde;o dos nutrientes.</label><br>
-            <label><input type="radio" name="q17" value="D"> D) Compacta&ccedil;&atilde;o aumenta a permeabilidade do solo.</label><br>
-            <label><input type="radio" name="q17" value="E"> E) Compacta&ccedil;&atilde;o estimula o crescimento de minhocas.</label>
-          </li>
-          
-          <!-- Questão 18 -->
-          <li>
-            <p><strong>18. Como o solo pode favorecer ou limitar a agricultura?</strong></p>
-            <label><input type="radio" name="q18" value="A"> A) Um solo fértil proporciona o crescimento saudável das plantas.</label><br>
-            <label><input type="radio" name="q18" value="B"> B) O solo n&atilde;o influencia a agricultura.</label><br>
-            <label><input type="radio" name="q18" value="C"> C) Todos os solos favorecem igualmente a produ&ccedil;&atilde;o.</label><br>
-            <label><input type="radio" name="q18" value="D"> D) Sozinhos os solos dificultam o cultivo sem aduba&ccedil;&atilde;o.</label><br>
-            <label><input type="radio" name="q18" value="E"> E) O solo prioriza a alimenta&ccedil;&atilde;o animal.</label>
-          </li>
-          
-          <!-- Questão 19 -->
-          <li>
-            <p><strong>19. Qual a rela&ccedil;&atilde;o entre solo e biodiversidade?</strong></p>
-            <label><input type="radio" name="q19" value="A"> A) Um solo rico promove maior biodiversidade.</label><br>
-            <label><input type="radio" name="q19" value="B"> B) O solo n&atilde;o influencia a biodiversidade.</label><br>
-            <label><input type="radio" name="q19" value="C"> C) Alta biodiversidade torna o solo pobre.</label><br>
-            <label><input type="radio" name="q19" value="D"> D) Sozinhos os solos &uacute;nicos n&atilde;o suportam vida.</label><br>
-            <label><input type="radio" name="q19" value="E"> E) Biodiversidade existe apenas em &aacute;reas aqu&aacute;ticas.</label>
-          </li>
-          
-          <!-- Questão 20 -->
-          <li>
-            <p><strong>20. Por que &eacute; importante cuidar do solo?</strong></p>
-            <label><input type="radio" name="q20" value="A"> A) Para garantir a qualidade dos alimentos produzidos.</label><br>
-            <label><input type="radio" name="q20" value="B"> B) Porque o solo &eacute; um recurso sem valor.</label><br>
-            <label><input type="radio" name="q20" value="C"> C) Pois &eacute; tarefa exclusiva dos agricultores.</label><br>
-            <label><input type="radio" name="q20" value="D"> D) Porque o solo n&atilde;o sofre influ&ecirc;ncia humana.</label><br>
-            <label><input type="radio" name="q20" value="E"> E) Para aumentar o valor dos im&oacute;veis.</label>
-          </li>
-        </ol>
-      </form>
-      <button class="btn" onclick="calcularPontuacao()">Enviar Respostas</button>
-    </section>
-    
-    <!-- Resultado -->
-    <div id="resultado"></div>
-    
-    <!-- Script para correção e exibição da pontuação -->
-    <script>
-      function calcularPontuacao() {
-        var score = 0;
-        var totalQuestions = 20;
-        // Chave de respostas corretas:
-        var answers = {
-          q1: "B",
-          q2: "A",
-          q3: "C",
-          q4: "C",
-          q5: "C",
-          q6: "B",
-          q7: "B",
-          q8: "C",
-          q9: "C",
-          q10: "C",
-          q11: "C",
-          q12: "B",
-          q13: "C",
-          q14: "C",
-          q15: "B",
-          q16: "B",
-          q17: "B",
-          q18: "A",
-          q19: "A",
-          q20: "A"
-        };
-    
-        // Percorre todas as questões e checa as respostas
-        for (var i = 1; i <= totalQuestions; i++) {
-          var qName = "q" + i;
-          var radios = document.getElementsByName(qName);
-          for (var j = 0; j < radios.length; j++) {
-            if (radios[j].checked) {
-              if (radios[j].value === answers[qName]) {
-                score++;
-              }
-              break;
-            }
-          }
-        }
-    
-        // Exibe a pontuação final com saudação personalizada
-        var studentName = document.getElementById("studentName").value || "Aluno";
-        document.getElementById("resultado").innerHTML = 
-          "Olá " + studentName + ", sua pontuação foi: " + score + " de " + totalQuestions;
-      }
-    </script>
-    
+    <div id="turmas"></div>
+
+    <div class="footer">E.B.M Vidal Ramos • Portal de aulas e atividades</div>
   </div>
+
+  <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* =========================================================
+       CONFIGURAÇÃO
+       ---------------------------------------------------------
+       Troque a senha abaixo pela sua. Por ser um site estático,
+       esta senha protege o painel de edição neste navegador —
+       ninguém publica no site sem acesso ao seu GitHub, então
+       é seguro para os alunos.
+       ========================================================= */
+    var SENHA_ADMIN = "vidal2026";
+
+    var TIPOS = [
+      { valor: "aula", label: "Aula", ico: "🎬" },
+      { valor: "atividade", label: "Atividade", ico: "📝" },
+      { valor: "material", label: "Material", ico: "📄" },
+      { valor: "outro", label: "Outro", ico: "🔗" }
+    ];
+    var DRAFT_KEY = "organizador_links_draft";
+
+    var state = { titulo: "Portal", subtitulo: "", turmas: [] };
+    var admin = false;
+
+    function uid() { return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
+    function icoDoTipo(t) { for (var i = 0; i < TIPOS.length; i++) if (TIPOS[i].valor === t) return TIPOS[i].ico; return "🔗"; }
+    function ehTipo(t) { for (var i = 0; i < TIPOS.length; i++) if (TIPOS[i].valor === t) return true; return false; }
+    function saveDraft() { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); } catch (e) {} }
+
+    function toast(msg, kind) {
+      var t = document.getElementById("toast");
+      t.textContent = msg; t.className = "toast show " + (kind || "ok");
+      setTimeout(function () { t.className = "toast"; }, 3000);
+    }
+
+    function carregar() {
+      var draft = null;
+      try { draft = localStorage.getItem(DRAFT_KEY); } catch (e) {}
+      if (draft) { try { state = JSON.parse(draft); render(); } catch (e) { try { localStorage.removeItem(DRAFT_KEY); } catch (e2) {} draft = null; } }
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "data.json?v=" + Date.now(), true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try { var data = JSON.parse(xhr.responseText); if (!draft) { state = data; render(); } }
+          catch (e) {}
+        } else if (!draft) {
+          document.getElementById("siteTitulo").textContent = "Não foi possível carregar os links";
+          document.getElementById("siteSubtitulo").textContent = "Abra o site pelo endereço publicado.";
+        }
+      };
+      xhr.send();
+    }
+
+    function render() {
+      document.getElementById("siteTitulo").textContent = state.titulo || "";
+      document.getElementById("siteSubtitulo").textContent = state.subtitulo || "";
+      document.getElementById("adminBar").className = "admin-bar" + (admin ? " on" : "");
+      document.getElementById("lockBtn").textContent = admin ? "🔓" : "🔒";
+
+      var cont = document.getElementById("turmas");
+      cont.innerHTML = "";
+
+      if (!state.turmas || state.turmas.length === 0) {
+        cont.innerHTML = '<div class="empty-big">Nenhuma turma cadastrada ainda.' +
+          (admin ? '<br><br><button class="btn" onclick="addTurma()">+ Criar primeira turma</button>' : '') + '</div>';
+        return;
+      }
+
+      var grid = document.createElement("div");
+      grid.className = "grid";
+
+      for (var ti = 0; ti < state.turmas.length; ti++) {
+        var turma = state.turmas[ti];
+        var cor = turma.cor || "#6d5efc";
+        var links = turma.links || [];
+        var div = document.createElement("div");
+        div.className = "turma" + (turma._collapsed ? " collapsed" : "");
+
+        var linksHtml = "";
+        for (var li = 0; li < links.length; li++) {
+          var lk = links[li];
+          var tipoClass = ehTipo(lk.tipo) ? lk.tipo : "outro";
+          linksHtml += '<div class="link-item">' +
+            '<a class="link-btn" href="' + esc(lk.url) + '" target="_blank" rel="noopener">' +
+              '<span class="ico">' + icoDoTipo(lk.tipo) + '</span>' +
+              '<span class="txt">' + esc(lk.titulo) + '</span>' +
+              '<span class="tipo ' + tipoClass + '">' + esc(lk.tipo || "outro") + '</span>' +
+            '</a>' +
+            (admin ? '<span class="edit-controls">' +
+              '<button class="icon-btn" title="Editar" onclick="editLink(' + ti + ',' + li + ')">✏️</button>' +
+              '<button class="icon-btn del" title="Remover" onclick="delLink(' + ti + ',' + li + ')">🗑️</button>' +
+            '</span>' : '') +
+          '</div>';
+        }
+
+        if (admin) {
+          linksHtml += '<div class="turma-actions">' +
+            '<button class="btn small" onclick="addLink(' + ti + ')">+ Link</button>' +
+            '<button class="btn small ghost" onclick="addVariosLinks(' + ti + ')">+ Vários de uma vez</button>' +
+          '</div>';
+        } else if (links.length === 0) {
+          linksHtml = '<p class="empty">Sem links nesta turma ainda.</p>';
+        }
+
+        div.innerHTML =
+          '<div class="turma-top" style="background:' + esc(cor) + '"></div>' +
+          '<div class="turma-head" onclick="toggleTurma(' + ti + ')">' +
+            '<span class="chev">▼</span>' +
+            '<h2>' + esc(turma.nome) + '</h2>' +
+            (admin ? '<span class="edit-controls" onclick="event.stopPropagation()">' +
+              '<button class="icon-btn" title="Editar turma" onclick="editTurma(' + ti + ')">✏️</button>' +
+              '<button class="icon-btn" title="Subir" onclick="moveTurma(' + ti + ',-1)">▲</button>' +
+              '<button class="icon-btn" title="Descer" onclick="moveTurma(' + ti + ',1)">▼</button>' +
+              '<button class="icon-btn del" title="Remover turma" onclick="delTurma(' + ti + ')">🗑️</button>' +
+            '</span>' : '<span class="count">' + links.length + ' link(s)</span>') +
+          '</div>' +
+          '<div class="turma-body">' + linksHtml + '</div>';
+        grid.appendChild(div);
+      }
+      cont.appendChild(grid);
+    }
+
+    function toggleTurma(ti) { state.turmas[ti]._collapsed = !state.turmas[ti]._collapsed; render(); }
+    function moveTurma(ti, dir) {
+      var j = ti + dir;
+      if (j < 0 || j >= state.turmas.length) return;
+      var t = state.turmas.splice(ti, 1)[0];
+      state.turmas.splice(j, 0, t);
+      saveDraft(); render();
+    }
+
+    /* Login */
+    function onLockClick() {
+      if (admin) { logout(); return; }
+      openModal(
+        "<h3>🔒 Área do professor</h3>" +
+        '<div class="field"><label>Senha</label><input type="password" id="mSenha" onkeydown="if(event.key===\'Enter\')doLogin()"></div>' +
+        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="doLogin()">Entrar</button></div>'
+      );
+      setTimeout(function () { var e = document.getElementById("mSenha"); if (e) e.focus(); }, 50);
+    }
+    function doLogin() {
+      var v = document.getElementById("mSenha").value;
+      if (v === SENHA_ADMIN) { admin = true; closeModal(); render(); toast("Modo professor ativado"); }
+      else { toast("Senha incorreta", "err"); }
+    }
+    function logout() { admin = false; render(); toast("Você saiu do modo professor"); }
+
+    /* Cabeçalho */
+    function openHeaderEdit() {
+      openModal(
+        "<h3>Editar título do site</h3>" +
+        '<div class="field"><label>Título</label><input id="mTit" value="' + esc(state.titulo) + '"></div>' +
+        '<div class="field"><label>Subtítulo</label><input id="mSub" value="' + esc(state.subtitulo) + '"></div>' +
+        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveHeader()">Salvar</button></div>'
+      );
+    }
+    function saveHeader() {
+      state.titulo = document.getElementById("mTit").value.replace(/^\s+|\s+$/g, "") || state.titulo;
+      state.subtitulo = document.getElementById("mSub").value.replace(/^\s+|\s+$/g, "");
+      saveDraft(); closeModal(); render();
+    }
+
+    /* Turmas */
+    function addTurma() { editTurmaForm(null); }
+    function editTurma(ti) { editTurmaForm(ti); }
+    function editTurmaForm(ti) {
+      var t = ti == null ? { nome: "", cor: "#6d5efc" } : state.turmas[ti];
+      openModal(
+        "<h3>" + (ti == null ? "Nova turma" : "Editar turma") + "</h3>" +
+        '<div class="field"><label>Nome da turma</label><input id="mNome" value="' + esc(t.nome) + '" placeholder="Ex: 6º Ano A"></div>' +
+        '<div class="field"><label>Cor</label><div class="color-row"><input type="color" id="mCor" value="' + esc(t.cor || "#6d5efc") + '"><span class="hint">Faixa colorida no topo do cartão</span></div></div>' +
+        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveTurma(' + (ti == null ? "null" : ti) + ')">Salvar</button></div>'
+      );
+      setTimeout(function () { var e = document.getElementById("mNome"); if (e) e.focus(); }, 50);
+    }
+    function saveTurma(ti) {
+      var nome = document.getElementById("mNome").value.replace(/^\s+|\s+$/g, "");
+      var cor = document.getElementById("mCor").value;
+      if (!nome) { toast("Digite o nome da turma", "err"); return; }
+      if (ti == null) state.turmas.push({ id: uid(), nome: nome, cor: cor, links: [] });
+      else { state.turmas[ti].nome = nome; state.turmas[ti].cor = cor; }
+      saveDraft(); closeModal(); render();
+    }
+    function delTurma(ti) {
+      if (!confirm('Remover a turma "' + state.turmas[ti].nome + '" e todos os seus links?')) return;
+      state.turmas.splice(ti, 1); saveDraft(); render();
+    }
+
+    /* Links */
+    function tipoOptions(sel) {
+      var s = "";
+      for (var i = 0; i < TIPOS.length; i++) s += '<option value="' + TIPOS[i].valor + '"' + (TIPOS[i].valor === sel ? " selected" : "") + '>' + TIPOS[i].ico + " " + TIPOS[i].label + "</option>";
+      return s;
+    }
+    function addLink(ti) { editLinkForm(ti, null); }
+    function editLink(ti, li) { editLinkForm(ti, li); }
+    function editLinkForm(ti, li) {
+      var l = li == null ? { titulo: "", url: "", tipo: "aula" } : state.turmas[ti].links[li];
+      openModal(
+        "<h3>" + (li == null ? "Adicionar link" : "Editar link") + "</h3>" +
+        '<div class="field"><label>Título</label><input id="mLt" value="' + esc(l.titulo) + '" placeholder="Ex: Aula 1 — Introdução"></div>' +
+        '<div class="field"><label>Endereço (URL)</label><input id="mLu" value="' + esc(l.url) + '" placeholder="https://..."></div>' +
+        '<div class="field"><label>Tipo</label><select id="mLtipo">' + tipoOptions(l.tipo || "aula") + '</select></div>' +
+        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveLink(' + ti + ',' + (li == null ? "null" : li) + ')">Salvar</button></div>'
+      );
+      setTimeout(function () { var e = document.getElementById("mLt"); if (e) e.focus(); }, 50);
+    }
+    function normalizaUrl(u) {
+      u = u.replace(/^\s+|\s+$/g, "");
+      if (!u) return "";
+      if (!/^https?:\/\//i.test(u) && !/^[\w.-]+\.html?/i.test(u) && u.charAt(0) !== "/" && u.charAt(0) !== "#") {
+        if (/\.[a-z]{2,}/i.test(u)) u = "https://" + u;
+      }
+      return u;
+    }
+    function saveLink(ti, li) {
+      var titulo = document.getElementById("mLt").value.replace(/^\s+|\s+$/g, "");
+      var url = normalizaUrl(document.getElementById("mLu").value);
+      var tipo = document.getElementById("mLtipo").value;
+      if (!titulo || !url) { toast("Preencha título e URL", "err"); return; }
+      if (li == null) state.turmas[ti].links.push({ id: uid(), titulo: titulo, url: url, tipo: tipo });
+      else { var l = state.turmas[ti].links[li]; l.titulo = titulo; l.url = url; l.tipo = tipo; }
+      saveDraft(); closeModal(); render();
+    }
+    function delLink(ti, li) {
+      if (!confirm('Remover o link "' + state.turmas[ti].links[li].titulo + '"?')) return;
+      state.turmas[ti].links.splice(li, 1); saveDraft(); render();
+    }
+
+    /* Vários links de uma vez */
+    function addVariosLinks(ti) {
+      openModal(
+        "<h3>Adicionar vários links</h3>" +
+        '<div class="field"><label>Cole um link por linha</label>' +
+        '<textarea id="mBulk" placeholder="Aula 1 | https://exemplo.com/aula1&#10;Atividade sobre o solo | o-solo.html&#10;https://youtube.com/..."></textarea>' +
+        '<div class="hint">Formato: <b>Título | URL</b> (um por linha). Se colar só a URL, ela vira o título.</div></div>' +
+        '<div class="field"><label>Tipo aplicado a todos</label><select id="mBulkTipo">' + tipoOptions("aula") + '</select></div>' +
+        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveBulk(' + ti + ')">Adicionar</button></div>'
+      );
+    }
+    function saveBulk(ti) {
+      var tipo = document.getElementById("mBulkTipo").value;
+      var linhas = document.getElementById("mBulk").value.split("\n");
+      var n = 0;
+      for (var i = 0; i < linhas.length; i++) {
+        var linha = linhas[i].replace(/^\s+|\s+$/g, "");
+        if (!linha) continue;
+        var titulo, url;
+        if (linha.indexOf("|") >= 0) {
+          var p = linha.split("|");
+          titulo = p[0].replace(/^\s+|\s+$/g, "");
+          url = normalizaUrl(p.slice(1).join("|"));
+        } else { url = normalizaUrl(linha); titulo = url; }
+        if (url) { state.turmas[ti].links.push({ id: uid(), titulo: titulo || url, url: url, tipo: tipo }); n++; }
+      }
+      saveDraft(); closeModal(); render();
+      toast(n + " link(s) adicionado(s)");
+    }
+
+    /* Publicar */
+    function publicar() {
+      var limpo = { titulo: state.titulo, subtitulo: state.subtitulo, turmas: [] };
+      for (var i = 0; i < state.turmas.length; i++) {
+        var t = state.turmas[i], nl = [];
+        for (var j = 0; j < (t.links || []).length; j++) {
+          var l = t.links[j];
+          nl.push({ id: l.id, titulo: l.titulo, url: l.url, tipo: l.tipo });
+        }
+        limpo.turmas.push({ id: t.id, nome: t.nome, cor: t.cor, links: nl });
+      }
+      var blob = new Blob([JSON.stringify(limpo, null, 2)], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "data.json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      openModal(
+        "<h3>✅ Arquivo data.json gerado!</h3>" +
+        "<p>Para os alunos verem as mudanças, envie este arquivo <b>data.json</b> para o GitHub:</p>" +
+        '<ol style="padding-left:20px;line-height:1.9;">' +
+        "<li>Abra seu repositório no GitHub.</li>" +
+        "<li>Clique no arquivo <b>data.json</b> e no lápis (✏️ Edit).</li>" +
+        "<li>Cole o novo conteúdo, <b>ou</b> use <b>Add file → Upload files</b> e arraste o arquivo baixado.</li>" +
+        "<li>Clique em <b>Commit changes</b>. Pronto! 🎉</li>" +
+        "</ol>" +
+        '<div class="modal-actions"><button class="btn" onclick="closeModal()">Entendi</button></div>'
+      );
+    }
+
+    /* Modal */
+    function openModal(html) { document.getElementById("modal").innerHTML = html; document.getElementById("overlay").className = "overlay show"; }
+    function closeModal() { document.getElementById("overlay").className = "overlay"; }
+    document.getElementById("overlay").onclick = function (e) { if (e.target.id === "overlay") closeModal(); };
+    document.onkeydown = function (e) { if (e.key === "Escape" || e.keyCode === 27) closeModal(); };
+
+    carregar();
+  </script>
 </body>
 </html>
