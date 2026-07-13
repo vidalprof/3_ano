@@ -280,7 +280,7 @@
 
     <div id="turmas"></div>
 
-    <div class="footer">E.B.M Vidal Ramos • Central de aulas e atividades</div>
+    <div class="footer">E.B.M Vidal Ramos • Central de aulas e atividades <span style="opacity:.55">· v6</span></div>
   </div>
 
   <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
@@ -718,32 +718,33 @@
       }
     }
     function extrairImagem(html, baseUrl) {
-      /* 1) Imagem de destaque declarada (og:image / twitter:image) */
+      function ok(u) { return u && !/^javascript:/i.test(u) && !/sprite|pixel|spacer|blank|1x1|tracking|analytics/i.test(u); }
+      /* 1) Imagem de destaque declarada (og:image / twitter:image / itemprop) */
       var metas = [
-        /<meta[^>]+property=["']og:image(?::url)?["'][^>]*content=["']([^"']+)["']/i,
-        /<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:image(?::url)?["']/i,
-        /<meta[^>]+name=["']twitter:image[^"']*["'][^>]*content=["']([^"']+)["']/i,
-        /<meta[^>]+content=["']([^"']+)["'][^>]*name=["']twitter:image/i
+        /<meta[^>]+(?:property|name)=["'](?:og:image(?::url)?|twitter:image[^"']*)["'][^>]*content=["']([^"']+)["']/i,
+        /<meta[^>]+content=["']([^"']+)["'][^>]*(?:property|name)=["'](?:og:image(?::url)?|twitter:image[^"']*)["']/i,
+        /<meta[^>]+itemprop=["']image["'][^>]*content=["']([^"']+)["']/i
       ];
-      for (var i = 0; i < metas.length; i++) { var m = html.match(metas[i]); if (m && m[1]) return absolutizar(m[1], baseUrl); }
-      /* 2) Primeira imagem de verdade no corpo (normalmente o mascote da atividade) */
-      var imgs = html.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/ig);
-      if (imgs) {
-        for (var j = 0; j < imgs.length; j++) {
-          var mm = imgs[j].match(/src\s*=\s*["']([^"']+)["']/i);
-          if (mm && mm[1]) {
-            var u = mm[1];
-            if (/^data:image\//i.test(u)) return u;
-            if (!/sprite|pixel|spacer|blank|1x1|tracking|analytics/i.test(u)) return absolutizar(u, baseUrl);
-          }
-        }
+      for (var i = 0; i < metas.length; i++) { var m = html.match(metas[i]); if (m && ok(m[1])) return absolutizar(m[1], baseUrl); }
+      /* 2) Primeira imagem do corpo (o mascote costuma ser uma <img>, mesmo com carregamento adiado) */
+      var imgTags = html.match(/<img\b[^>]*>/ig) || [];
+      for (var j = 0; j < imgTags.length; j++) {
+        var a = imgTags[j].match(/\b(?:src|data-src|data-original|data-lazy-src|data-lazy)\s*=\s*["']([^"'>]+)["']/i)
+             || imgTags[j].match(/\bsrc\s*=\s*([^\s">]+)/i);
+        if (a && ok(a[1])) { if (/^data:image\//i.test(a[1])) return a[1]; return absolutizar(a[1], baseUrl); }
       }
-      /* 3) Ícone do site (apple-touch-icon ou favicon declarado) */
+      /* 3) <picture>/<source srcset> */
+      var srcset = html.match(/<source[^>]+srcset\s*=\s*["']?\s*([^"',\s]+)/i);
+      if (srcset && ok(srcset[1])) return absolutizar(srcset[1], baseUrl);
+      /* 4) Imagem de fundo em estilo (background-image: url(...)) */
+      var bg = html.match(/background(?:-image)?\s*:\s*url\((["']?)([^"')]+)\1\)/i);
+      if (bg && ok(bg[2])) return absolutizar(bg[2], baseUrl);
+      /* 5) Ícone do site (apple-touch-icon ou favicon declarado) */
       var icons = [
         /<link[^>]+rel=["'][^"']*apple-touch-icon[^"']*["'][^>]*href=["']([^"']+)["']/i,
         /<link[^>]+rel=["'][^"']*icon[^"']*["'][^>]*href=["']([^"']+)["']/i
       ];
-      for (var k = 0; k < icons.length; k++) { var mi = html.match(icons[k]); if (mi && mi[1]) return absolutizar(mi[1], baseUrl); }
+      for (var k = 0; k < icons.length; k++) { var mi = html.match(icons[k]); if (mi && ok(mi[1])) return absolutizar(mi[1], baseUrl); }
       return "";
     }
     /* Busca o título real e a imagem de destaque (mascote) da página.
