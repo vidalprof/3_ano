@@ -78,30 +78,41 @@
     .admin-bar .spacer { flex: 1 1 auto; min-width: 8px; }
     .admin-bar .btn { margin: 4px 0 4px 8px; }
 
-    /* ---------- Grade de turmas ---------- */
-    .grid { display: flex; flex-wrap: wrap; margin: 0 -10px; }
-    .turma {
-      flex: 1 1 300px; max-width: 100%;
-      margin: 10px; background: var(--card);
-      border-radius: var(--radius); box-shadow: var(--shadow-sm);
-      overflow: hidden; border: 1px solid var(--border);
-      transition: box-shadow .18s, transform .18s;
-      align-self: flex-start;
+    /* ---------- Layout mestre-detalhe (turmas à esquerda, links à direita) ---------- */
+    .layout { display: flex; flex-wrap: wrap; margin: 0 -10px; align-items: flex-start; }
+    .col-side { flex: 1 1 240px; margin: 10px; }
+    .col-main { flex: 2 1 420px; margin: 10px; min-width: 0; }
+
+    .sidebar {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border); padding: 12px;
     }
-    .turma:hover { box-shadow: var(--shadow); }
-    .turma-top { height: 6px; background: var(--brand); }
-    .turma-head {
-      display: flex; align-items: center; padding: 16px 18px 10px; cursor: pointer;
+    .side-title {
+      font-size: .72rem; font-weight: 800; letter-spacing: 1px; color: var(--muted);
+      text-transform: uppercase; padding: 6px 8px 10px;
     }
-    .turma-head h2 { margin: 0; font-size: 1.15rem; flex: 1 1 auto; letter-spacing: -0.2px; }
-    .turma-head .count {
-      color: var(--muted); font-size: .78rem; font-weight: 700;
-      background: #f1f2f9; padding: 3px 9px; border-radius: 20px; margin-left: 8px; white-space: nowrap;
+    .turma-item {
+      display: flex; align-items: center; padding: 12px 12px; border-radius: 13px;
+      cursor: pointer; margin-bottom: 4px; transition: background .15s;
     }
-    .turma-head .chev { color: var(--muted); margin-right: 10px; transition: transform .2s; font-size: 12px; }
-    .turma.collapsed .chev { transform: rotate(-90deg); }
-    .turma.collapsed .turma-body { display: none; }
-    .turma-body { padding: 4px 16px 18px; }
+    .turma-item:hover { background: #f4f6fc; }
+    .turma-item.active { background: rgba(109,94,252,0.12); }
+    .turma-item.active .nome { color: var(--brand); font-weight: 700; }
+    .turma-item .dot { width: 11px; height: 11px; border-radius: 50%; margin-right: 11px; flex: 0 0 auto; box-shadow: 0 0 0 3px rgba(0,0,0,0.04); }
+    .turma-item .nome { flex: 1 1 auto; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .turma-item .n { font-size: .74rem; font-weight: 700; color: var(--muted); background: #f1f2f9; padding: 2px 8px; border-radius: 20px; flex: 0 0 auto; }
+    .turma-item.active .n { background: rgba(109,94,252,0.18); color: var(--brand); }
+    .side-add { width: 100%; margin-top: 8px; }
+
+    .panel {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .panel-top { height: 6px; background: var(--brand); }
+    .panel-head { display: flex; align-items: center; padding: 18px 20px 8px; }
+    .panel-head h2 { margin: 0; font-size: 1.25rem; flex: 1 1 auto; letter-spacing: -0.2px; overflow: hidden; text-overflow: ellipsis; }
+    .panel-head .count { color: var(--muted); font-size: .78rem; font-weight: 700; background: #f1f2f9; padding: 3px 9px; border-radius: 20px; margin-left: 8px; white-space: nowrap; }
+    .panel-body { padding: 4px 20px 20px; }
 
     /* Links */
     .link-item { display: flex; align-items: center; margin: 9px 0; }
@@ -246,6 +257,7 @@
 
     var state = { titulo: "Portal", subtitulo: "", turmas: [] };
     var admin = false;
+    var sel = 0;
 
     function uid() { return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
     function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
@@ -292,62 +304,74 @@
           (admin ? '<br><br><button class="btn" onclick="addTurma()">+ Criar primeira turma</button>' : '') + '</div>';
         return;
       }
+      if (sel < 0 || sel >= state.turmas.length) sel = 0;
 
-      var grid = document.createElement("div");
-      grid.className = "grid";
-
+      /* ----- Coluna da esquerda: lista de turmas ----- */
+      var side = '<div class="col-side"><div class="sidebar"><div class="side-title">Turmas</div>';
       for (var ti = 0; ti < state.turmas.length; ti++) {
-        var turma = state.turmas[ti];
-        var cor = turma.cor || "#6d5efc";
-        var links = turma.links || [];
-        var div = document.createElement("div");
-        div.className = "turma" + (turma._collapsed ? " collapsed" : "");
-
-        var linksHtml = "";
-        for (var li = 0; li < links.length; li++) {
-          var lk = links[li];
-          var tipoClass = ehTipo(lk.tipo) ? lk.tipo : "outro";
-          linksHtml += '<div class="link-item">' +
-            '<a class="link-btn" href="' + esc(lk.url) + '" target="_blank" rel="noopener">' +
-              '<span class="ico">' + icoDoTipo(lk.tipo) + '</span>' +
-              '<span class="txt">' + esc(lk.titulo) + '</span>' +
-              '<span class="tipo ' + tipoClass + '">' + esc(lk.tipo || "outro") + '</span>' +
-            '</a>' +
-            (admin ? '<span class="edit-controls">' +
-              '<button class="icon-btn" title="Editar" onclick="editLink(' + ti + ',' + li + ')">✏️</button>' +
-              '<button class="icon-btn del" title="Remover" onclick="delLink(' + ti + ',' + li + ')">🗑️</button>' +
-            '</span>' : '') +
-          '</div>';
-        }
-
-        if (admin) {
-          linksHtml += '<div class="turma-actions">' +
-            '<button class="btn small" onclick="addLink(' + ti + ')">+ Link</button>' +
-            '<button class="btn small ghost" onclick="addVariosLinks(' + ti + ')">+ Vários de uma vez</button>' +
-          '</div>';
-        } else if (links.length === 0) {
-          linksHtml = '<p class="empty">Sem links nesta turma ainda.</p>';
-        }
-
-        div.innerHTML =
-          '<div class="turma-top" style="background:' + esc(cor) + '"></div>' +
-          '<div class="turma-head" onclick="toggleTurma(' + ti + ')">' +
-            '<span class="chev">▼</span>' +
-            '<h2>' + esc(turma.nome) + '</h2>' +
-            (admin ? '<span class="edit-controls" onclick="event.stopPropagation()">' +
-              '<button class="icon-btn" title="Editar turma" onclick="editTurma(' + ti + ')">✏️</button>' +
-              '<button class="icon-btn" title="Subir" onclick="moveTurma(' + ti + ',-1)">▲</button>' +
-              '<button class="icon-btn" title="Descer" onclick="moveTurma(' + ti + ',1)">▼</button>' +
-              '<button class="icon-btn del" title="Remover turma" onclick="delTurma(' + ti + ')">🗑️</button>' +
-            '</span>' : '<span class="count">' + links.length + ' link(s)</span>') +
-          '</div>' +
-          '<div class="turma-body">' + linksHtml + '</div>';
-        grid.appendChild(div);
+        var t = state.turmas[ti];
+        var c = t.cor || "#6d5efc";
+        side += '<div class="turma-item' + (ti === sel ? " active" : "") + '" onclick="selectTurma(' + ti + ')">' +
+          '<span class="dot" style="background:' + esc(c) + '"></span>' +
+          '<span class="nome">' + esc(t.nome) + '</span>' +
+          (admin ? '<span class="edit-controls" onclick="event.stopPropagation()">' +
+            '<button class="icon-btn" title="Editar" onclick="editTurma(' + ti + ')">✏️</button>' +
+            '<button class="icon-btn" title="Subir" onclick="moveTurma(' + ti + ',-1)">▲</button>' +
+            '<button class="icon-btn" title="Descer" onclick="moveTurma(' + ti + ',1)">▼</button>' +
+            '<button class="icon-btn del" title="Remover" onclick="delTurma(' + ti + ')">🗑️</button>' +
+          '</span>' : '<span class="n">' + (t.links || []).length + '</span>') +
+        '</div>';
       }
-      cont.appendChild(grid);
+      if (admin) side += '<button class="btn small side-add" onclick="addTurma()">+ Nova turma</button>';
+      side += '</div></div>';
+
+      /* ----- Coluna da direita: links da turma selecionada ----- */
+      var turma = state.turmas[sel];
+      var cor = turma.cor || "#6d5efc";
+      var links = turma.links || [];
+      var linksHtml = "";
+      for (var li = 0; li < links.length; li++) {
+        var lk = links[li];
+        var tipoClass = ehTipo(lk.tipo) ? lk.tipo : "outro";
+        linksHtml += '<div class="link-item">' +
+          '<a class="link-btn" href="' + esc(lk.url) + '" target="_blank" rel="noopener">' +
+            '<span class="ico">' + icoDoTipo(lk.tipo) + '</span>' +
+            '<span class="txt">' + esc(lk.titulo) + '</span>' +
+            '<span class="tipo ' + tipoClass + '">' + esc(lk.tipo || "outro") + '</span>' +
+          '</a>' +
+          (admin ? '<span class="edit-controls">' +
+            '<button class="icon-btn" title="Editar" onclick="editLink(' + sel + ',' + li + ')">✏️</button>' +
+            '<button class="icon-btn del" title="Remover" onclick="delLink(' + sel + ',' + li + ')">🗑️</button>' +
+          '</span>' : '') +
+        '</div>';
+      }
+      if (admin) {
+        linksHtml += '<div class="turma-actions">' +
+          '<button class="btn small" onclick="addLink(' + sel + ')">+ Link</button>' +
+          '<button class="btn small ghost" onclick="addVariosLinks(' + sel + ')">+ Vários de uma vez</button>' +
+        '</div>';
+      } else if (links.length === 0) {
+        linksHtml = '<p class="empty">Sem links nesta turma ainda.</p>';
+      }
+
+      var main = '<div class="col-main"><div class="panel" id="painelTurma">' +
+        '<div class="panel-top" style="background:' + esc(cor) + '"></div>' +
+        '<div class="panel-head"><h2>' + esc(turma.nome) + '</h2>' +
+          '<span class="count">' + links.length + ' link(s)</span>' +
+        '</div>' +
+        '<div class="panel-body">' + linksHtml + '</div>' +
+      '</div></div>';
+
+      cont.innerHTML = '<div class="layout">' + side + main + '</div>';
     }
 
-    function toggleTurma(ti) { state.turmas[ti]._collapsed = !state.turmas[ti]._collapsed; render(); }
+    function selectTurma(ti) {
+      sel = ti; render();
+      if (window.innerWidth < 700) {
+        var p = document.getElementById("painelTurma");
+        if (p && p.scrollIntoView) p.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
     function moveTurma(ti, dir) {
       var j = ti + dir;
       if (j < 0 || j >= state.turmas.length) return;
