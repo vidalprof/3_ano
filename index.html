@@ -303,6 +303,21 @@
     var sel = 0;
     var cloud = false, dbRef = null, cloudHasData = false;
 
+    /* O Firebase remove listas vazias e às vezes devolve objetos no lugar de
+       arrays. Estas funções garantem que turmas/links sejam sempre arrays. */
+    function toArray(x) {
+      if (x instanceof Array) return x;
+      if (x && typeof x === "object") { var a = []; for (var k in x) if (x.hasOwnProperty(k)) a.push(x[k]); return a; }
+      return [];
+    }
+    function normalizeState() {
+      if (!state || typeof state !== "object") state = { titulo: "Central de Aulas", subtitulo: "", turmas: [] };
+      state.turmas = toArray(state.turmas);
+      for (var i = 0; i < state.turmas.length; i++) {
+        if (state.turmas[i]) state.turmas[i].links = toArray(state.turmas[i].links);
+      }
+    }
+
     function uid() { return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7); }
     function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
     function icoDoTipo(t) { for (var i = 0; i < TIPOS.length; i++) if (TIPOS[i].valor === t) return TIPOS[i].ico; return "🔗"; }
@@ -391,6 +406,7 @@
     }
 
     function render() {
+      normalizeState();
       document.getElementById("siteTitulo").textContent = state.titulo || "";
       document.getElementById("siteSubtitulo").textContent = state.subtitulo || "";
       document.getElementById("adminBar").className = "admin-bar" + (admin ? " on" : "");
@@ -576,14 +592,28 @@
     function editLink(ti, li) { editLinkForm(ti, li); }
     function editLinkForm(ti, li) {
       var l = li == null ? { titulo: "", url: "", tipo: "aula" } : state.turmas[ti].links[li];
+      var campos;
+      if (li == null) {
+        /* Adicionar: apenas o link. O nome sai do próprio link. */
+        campos = '<div class="field"><label>Cole o link (URL)</label>' +
+          '<input id="mLu" placeholder="https://..." onkeydown="if(event.key===\'Enter\')saveLink(' + ti + ',null)"></div>' +
+          '<div class="hint" style="margin-top:-8px;">O nome é preenchido automaticamente a partir do link. Para renomear ou mudar o tipo, use o lápis ✏️ depois.</div>';
+      } else {
+        /* Editar: nome, endereço e tipo. */
+        campos = '<div class="field"><label>Título</label><input id="mLt" value="' + esc(l.titulo) + '"></div>' +
+          '<div class="field"><label>Endereço (URL)</label><input id="mLu" value="' + esc(l.url) + '"></div>' +
+          '<div class="field"><label>Tipo</label><select id="mLtipo">' + tipoOptions(l.tipo || "aula") + '</select></div>';
+      }
       openModal(
-        "<h3>" + (li == null ? "Adicionar link" : "Editar link") + "</h3>" +
-        '<div class="field"><label>Título</label><input id="mLt" value="' + esc(l.titulo) + '" placeholder="Ex: Aula 1 — Introdução"></div>' +
-        '<div class="field"><label>Endereço (URL)</label><input id="mLu" value="' + esc(l.url) + '" placeholder="https://..."></div>' +
-        '<div class="field"><label>Tipo</label><select id="mLtipo">' + tipoOptions(l.tipo || "aula") + '</select></div>' +
+        "<h3>" + (li == null ? "Adicionar link" : "Editar link") + "</h3>" + campos +
         '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveLink(' + ti + ',' + (li == null ? "null" : li) + ')">Salvar</button></div>'
       );
-      setTimeout(function () { var e = document.getElementById("mLt"); if (e) e.focus(); }, 50);
+      setTimeout(function () { var e = document.getElementById(li == null ? "mLu" : "mLt"); if (e) e.focus(); }, 50);
+    }
+    /* Gera um nome amigável a partir da URL (sem http:// e www.) */
+    function tituloDoLink(url) {
+      var u = url.replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\/+$/, "");
+      return u || url;
     }
     function normalizaUrl(u) {
       u = u.replace(/^\s+|\s+$/g, "");
@@ -594,15 +624,20 @@
       return u;
     }
     function saveLink(ti, li) {
-      var titulo = document.getElementById("mLt").value.replace(/^\s+|\s+$/g, "");
       var url = normalizaUrl(document.getElementById("mLu").value);
-      var tipo = document.getElementById("mLtipo").value;
-      if (!titulo || !url) { toast("Preencha título e URL", "err"); return; }
+      if (!url) { toast("Cole o link (URL)", "err"); return; }
+      var tEl = document.getElementById("mLt");
+      var titulo = tEl ? tEl.value.replace(/^\s+|\s+$/g, "") : "";
+      if (!titulo) titulo = tituloDoLink(url);
+      var tipoEl = document.getElementById("mLtipo");
+      var tipo = tipoEl ? tipoEl.value : (li == null ? "aula" : (state.turmas[ti].links[li].tipo || "aula"));
+      state.turmas[ti].links = toArray(state.turmas[ti].links);
       if (li == null) state.turmas[ti].links.push({ id: uid(), titulo: titulo, url: url, tipo: tipo });
       else { var l = state.turmas[ti].links[li]; l.titulo = titulo; l.url = url; l.tipo = tipo; }
       persist(); closeModal(); render();
     }
     function delLink(ti, li) {
+      state.turmas[ti].links = toArray(state.turmas[ti].links);
       if (!confirm('Remover o link "' + state.turmas[ti].links[li].titulo + '"?')) return;
       state.turmas[ti].links.splice(li, 1); persist(); render();
     }
@@ -620,6 +655,7 @@
     }
     function saveBulk(ti) {
       var tipo = document.getElementById("mBulkTipo").value;
+      state.turmas[ti].links = toArray(state.turmas[ti].links);
       var linhas = document.getElementById("mBulk").value.split("\n");
       var n = 0;
       for (var i = 0; i < linhas.length; i++) {
